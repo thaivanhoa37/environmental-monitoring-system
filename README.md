@@ -188,7 +188,7 @@ The project is open to community contributions:
 - Add new sensors (e.g., MQ-7 for CO, BH1750 for light).
 - Optimize ESP32 code (reduce power consumption).
 - Integrate a mobile app (Blynk, MIT App Inventor).
-Please submit a pull request or contact via email: [your_email@example.com].
+Please submit a pull request or contact via email: [thaivanhoa2002@gmail.com].
 
 ## Author
 - **Thái Văn Hòa**: Student, programmer, hardware designer, project implementer.
