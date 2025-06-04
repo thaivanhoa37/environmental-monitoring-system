@@ -1,0 +1,53 @@
+HƯỚNG DẪN SỬ DỤNG VÀ HIỆU CHUẨN CẢM BIẾN BỤI GP2Y1014AUOF
+
+1. THÔNG SỐ TIÊU CHUẨN WHO
+- < 0.012 mg/m3: Chất lượng không khí rất tốt
+- < 0.035 mg/m3: Chất lượng không khí tốt 
+- < 0.055 mg/m3: Chất lượng không khí trung bình
+- < 0.150 mg/m3: Chất lượng không khí kém
+- < 0.250 mg/m3: Chất lượng không khí rất kém
+- ≥ 0.250 mg/m3: Nguy hại cho sức khỏe
+
+2. KIỂM TRA GIÁ TRỊ ĐO
+- Trong phòng sạch: 0.0-0.05 mg/m3
+- Trong nhà thông thường: 0.1-0.5 mg/m3
+- Ngoài trời thành phố: 0.2-1.0 mg/m3
+
+3. HƯỚNG DẪN HIỆU CHUẨN
+a) Kiểm tra phần cứng:
+- Điện áp Vcc phải ổn định ở 5V
+- Điện áp V-LED phải ổn định ở 3.3V
+- Kiểm tra điện trở 150Ω và tụ 220μF
+- Đảm bảo các mối hàn tiếp xúc tốt
+
+b) Điểm 0 (không có bụi):
+- Đặt cảm biến trong phòng sạch hoặc dùng túi lọc HEPA
+- Chờ 10-15 phút để ổn định
+- Giá trị đo phải < 0.05 mg/m3
+
+c) Vệ sinh cảm biến:
+- Dùng khí nén sạch thổi nhẹ vào khe hở
+- KHÔNG được tháo vỏ cảm biến
+- KHÔNG để nước vào cảm biến
+
+4. XỬ LÝ SỰ CỐ
+a) Giá trị đo quá cao (> 1.0 mg/m3):
+- Kiểm tra nguồn điện (5V và 3.3V)
+- Vệ sinh cảm biến bằng khí nén
+- Kiểm tra mối hàn và kết nối
+
+b) Giá trị đo không ổn định:
+- Đảm bảo cảm biến đã chạy 3-5 phút
+- Kiểm tra tụ 220μF
+- Đặt cảm biến ở vị trí thông thoáng
+
+c) Không đọc được giá trị:
+- Kiểm tra kết nối chân LED và Vo
+- Kiểm tra điện trở 150Ω
+- Thử đổi chân analog khác
+
+5. BẢO QUẢN
+- Nhiệt độ hoạt động: -10°C đến 65°C
+- Độ ẩm hoạt động: dưới 95% RH
+- Tránh môi trường ăn mòn
+- Vệ sinh định kỳ mỗi tháng

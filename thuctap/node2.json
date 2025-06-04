@@ -1,0 +1,1662 @@
+[
+    {
+        "id": "f0d3c1b35c90a760",
+        "type": "tab",
+        "label": "Flow 2",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "79d0bf79b93b08f4",
+        "type": "group",
+        "z": "f0d3c1b35c90a760",
+        "name": "Save Database MySQL",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "b776b4804976057c",
+            "09c5a6481bac78b5",
+            "dacda7ebc7cdcebd",
+            "4f3700b28894deb3",
+            "1386b7eb45f9e538",
+            "7de7c3139da986c3"
+        ],
+        "x": 774,
+        "y": 499,
+        "w": 672,
+        "h": 262
+    },
+    {
+        "id": "e839752386558b90",
+        "type": "group",
+        "z": "f0d3c1b35c90a760",
+        "name": "View dashboard node red",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "f3b5bf0046c5eb77",
+            "8b99d46424fde6e5",
+            "238b76ea37934139",
+            "6b4047d1acfe5a95",
+            "8b845d0d42b10f60",
+            "9b54644e69dea88e",
+            "b6499bf0472d8fd2",
+            "11f155915af6c607"
+        ],
+        "x": 34,
+        "y": 219,
+        "w": 412,
+        "h": 262
+    },
+    {
+        "id": "1a4b088f8a1ff0d2",
+        "type": "group",
+        "z": "f0d3c1b35c90a760",
+        "name": "Alarm Mail",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "2cecb5d05617f4f5",
+            "cb2e492e61b8153c",
+            "c311f0e5f80134f6",
+            "7ee0317bd9164006",
+            "ffa3b4fbda140326",
+            "d4ec955dd89127f3"
+        ],
+        "x": 494,
+        "y": 139,
+        "w": 852,
+        "h": 142
+    },
+    {
+        "id": "427a2362f455543e",
+        "type": "group",
+        "z": "f0d3c1b35c90a760",
+        "name": "Control dashboard node red",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "72abc7acc11e4df0",
+            "df4dacdf8e9bdc5e",
+            "5add5546bd26afeb",
+            "bb93055cf2e3af10",
+            "6d58fba35ab85d06",
+            "7f9c43a6e967b8ec",
+            "6b525e4ef4aa5a53",
+            "e71356afcab01dbb",
+            "5334a525b464b53e",
+            "ba705396f1387065",
+            "68aadf6bb2c3c11e",
+            "778ca249cb3e3a9e",
+            "22177f1853b9fc74",
+            "b72ec5a16bce552f",
+            "b0ca87723c3fe0f8",
+            "c696c1be08b2e196",
+            "84fbb07a243c6d6f"
+        ],
+        "x": 34,
+        "y": 839,
+        "w": 1132,
+        "h": 322
+    },
+    {
+        "id": "81622da710a611df",
+        "type": "group",
+        "z": "f0d3c1b35c90a760",
+        "name": "Control mode device and thresholds Web - Node 2",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "817deffd2d23f2af",
+            "1c70984646c41e0e",
+            "8050effb2738096f",
+            "04d802c64bfc6ac5",
+            "b61169aee16ece1e",
+            "4ca7151ca74a55de"
+        ],
+        "x": 474,
+        "y": 299,
+        "w": 892,
+        "h": 182
+    },
+    {
+        "id": "3aa83388beb4db91",
+        "type": "group",
+        "z": "f0d3c1b35c90a760",
+        "name": "Notification state web and node red dashboard - Node 2",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "e1b11d3934a15f7a",
+            "54b71c2fa3c65779",
+            "eed55c8386508587",
+            "d8de36b00fa2ca33",
+            "83cdfdda4256146a",
+            "3aae8d223e818fda",
+            "b16ca22b359dc3f1",
+            "64d5f784ec27f875",
+            "0885345fcf3f7a1a",
+            "f7b16410e2649c12",
+            "8a5ab80419cdf625",
+            "af7f418b10fb068a"
+        ],
+        "x": 34,
+        "y": 499,
+        "w": 752,
+        "h": 322
+    },
+    {
+        "id": "f3b5bf0046c5eb77",
+        "type": "mqtt in",
+        "z": "f0d3c1b35c90a760",
+        "g": "e839752386558b90",
+        "name": "",
+        "topic": "node2/state/dust",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "ce842d4e17c1ed98",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 140,
+        "y": 260,
+        "wires": [
+            [
+                "8b845d0d42b10f60"
+            ]
+        ]
+    },
+    {
+        "id": "8b99d46424fde6e5",
+        "type": "mqtt in",
+        "z": "f0d3c1b35c90a760",
+        "g": "e839752386558b90",
+        "name": "",
+        "topic": "node2/state/aqi",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "ce842d4e17c1ed98",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 140,
+        "y": 320,
+        "wires": [
+            [
+                "9b54644e69dea88e"
+            ]
+        ]
+    },
+    {
+        "id": "238b76ea37934139",
+        "type": "mqtt in",
+        "z": "f0d3c1b35c90a760",
+        "g": "e839752386558b90",
+        "name": "",
+        "topic": "node2/state/temperature",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "ce842d4e17c1ed98",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 170,
+        "y": 380,
+        "wires": [
+            [
+                "b6499bf0472d8fd2"
+            ]
+        ]
+    },
+    {
+        "id": "6b4047d1acfe5a95",
+        "type": "mqtt in",
+        "z": "f0d3c1b35c90a760",
+        "g": "e839752386558b90",
+        "name": "",
+        "topic": "node2/state/humidity",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "ce842d4e17c1ed98",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 150,
+        "y": 440,
+        "wires": [
+            [
+                "11f155915af6c607"
+            ]
+        ]
+    },
+    {
+        "id": "8b845d0d42b10f60",
+        "type": "ui_chart",
+        "z": "f0d3c1b35c90a760",
+        "g": "e839752386558b90",
+        "name": "",
+        "group": "3260720a0b55ed8b",
+        "order": 1,
+        "width": "25",
+        "height": "5",
+        "label": "dust chart",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "8",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 300,
+        "y": 260,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "9b54644e69dea88e",
+        "type": "ui_chart",
+        "z": "f0d3c1b35c90a760",
+        "g": "e839752386558b90",
+        "name": "",
+        "group": "3260720a0b55ed8b",
+        "order": 2,
+        "width": "25",
+        "height": "5",
+        "label": "aqichart",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "8",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 300,
+        "y": 320,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b6499bf0472d8fd2",
+        "type": "ui_chart",
+        "z": "f0d3c1b35c90a760",
+        "g": "e839752386558b90",
+        "name": "",
+        "group": "3260720a0b55ed8b",
+        "order": 3,
+        "width": "25",
+        "height": "5",
+        "label": "tempchart",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "8",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 360,
+        "y": 380,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "11f155915af6c607",
+        "type": "ui_chart",
+        "z": "f0d3c1b35c90a760",
+        "g": "e839752386558b90",
+        "name": "",
+        "group": "3260720a0b55ed8b",
+        "order": 4,
+        "width": "25",
+        "height": "5",
+        "label": "humchart",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "8",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 320,
+        "y": 440,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b776b4804976057c",
+        "type": "mqtt in",
+        "z": "f0d3c1b35c90a760",
+        "g": "79d0bf79b93b08f4",
+        "name": "",
+        "topic": "node2/state/dust",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "ce842d4e17c1ed98",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 880,
+        "y": 540,
+        "wires": [
+            [
+                "7de7c3139da986c3"
+            ]
+        ]
+    },
+    {
+        "id": "09c5a6481bac78b5",
+        "type": "mqtt in",
+        "z": "f0d3c1b35c90a760",
+        "g": "79d0bf79b93b08f4",
+        "name": "",
+        "topic": "node2/state/aqi",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "ce842d4e17c1ed98",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 880,
+        "y": 600,
+        "wires": [
+            [
+                "7de7c3139da986c3"
+            ]
+        ]
+    },
+    {
+        "id": "dacda7ebc7cdcebd",
+        "type": "mqtt in",
+        "z": "f0d3c1b35c90a760",
+        "g": "79d0bf79b93b08f4",
+        "name": "",
+        "topic": "node2/state/temperature",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "ce842d4e17c1ed98",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 910,
+        "y": 660,
+        "wires": [
+            [
+                "7de7c3139da986c3"
+            ]
+        ]
+    },
+    {
+        "id": "4f3700b28894deb3",
+        "type": "mqtt in",
+        "z": "f0d3c1b35c90a760",
+        "g": "79d0bf79b93b08f4",
+        "name": "",
+        "topic": "node2/state/humidity",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "ce842d4e17c1ed98",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 890,
+        "y": 720,
+        "wires": [
+            [
+                "7de7c3139da986c3"
+            ]
+        ]
+    },
+    {
+        "id": "1386b7eb45f9e538",
+        "type": "mysql",
+        "z": "f0d3c1b35c90a760",
+        "g": "79d0bf79b93b08f4",
+        "mydb": "ecbac3b738bfb9e1",
+        "name": "",
+        "x": 1330,
+        "y": 660,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "7de7c3139da986c3",
+        "type": "function",
+        "z": "f0d3c1b35c90a760",
+        "g": "79d0bf79b93b08f4",
+        "name": "function 5",
+        "func": "// Lưu dữ liệu vào context\nlet sensor = context.get(\"sensor\") || {};\n\nswitch (msg.topic) {\n    case \"node2/state/temperature\":\n        sensor.temperature = parseFloat(msg.payload);\n        break;\n    case \"node2/state/humidity\":\n        sensor.humidity = parseFloat(msg.payload);\n        break;\n    case \"node2/state/dust\":\n        sensor.dust_density = parseFloat(msg.payload);\n        break;\n    case \"node2/state/aqi\":\n        sensor.aqi = parseInt(msg.payload);\n        break;\n}\n\ncontext.set(\"sensor\", sensor);\n\nif (\n    sensor.temperature !== undefined &&\n    sensor.humidity !== undefined &&\n    sensor.dust_density !== undefined &&\n    sensor.aqi !== undefined\n) {\n    // Cộng 7 tiếng để khớp với giờ Việt Nam\n    let now = new Date();\n    now.setHours(now.getHours() + 7);\n    let time = now.toISOString().slice(0, 19).replace(\"T\", \" \");\n\n    msg.topic = `INSERT INTO sensor_datanode2 (temperature, humidity, dust_density, aqi, timestamp)\n                 VALUES (${sensor.temperature}, ${sensor.humidity}, ${sensor.dust_density}, ${sensor.aqi}, '${time}')`;\n\n    context.set(\"sensor\", {}); // Reset sau khi đã gửi\n    return msg;\n}\n\nreturn null;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1140,
+        "y": 660,
+        "wires": [
+            [
+                "1386b7eb45f9e538"
+            ]
+        ]
+    },
+    {
+        "id": "2cecb5d05617f4f5",
+        "type": "mqtt in",
+        "z": "f0d3c1b35c90a760",
+        "g": "1a4b088f8a1ff0d2",
+        "name": "",
+        "topic": "node2/state/aqi",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "ce842d4e17c1ed98",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 600,
+        "y": 180,
+        "wires": [
+            [
+                "d4ec955dd89127f3"
+            ]
+        ]
+    },
+    {
+        "id": "cb2e492e61b8153c",
+        "type": "mqtt in",
+        "z": "f0d3c1b35c90a760",
+        "g": "1a4b088f8a1ff0d2",
+        "name": "",
+        "topic": "node2/state/temperature",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "ce842d4e17c1ed98",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 630,
+        "y": 240,
+        "wires": [
+            [
+                "c311f0e5f80134f6"
+            ]
+        ]
+    },
+    {
+        "id": "c311f0e5f80134f6",
+        "type": "function",
+        "z": "f0d3c1b35c90a760",
+        "g": "1a4b088f8a1ff0d2",
+        "name": "function alarm TEMPERATURE MAIL",
+        "func": "// Khởi tạo biến trạng thái nếu chưa có\ncontext.state = context.state || \"normal\";\n\n// Lấy giá trị nhiệt độ từ msg.payload\nvar temperature = parseFloat(msg.payload);\n\n// Kiểm tra nếu nhiệt độ lớn hơn 30°C\nif (temperature > 30) {\n    if (context.state !== \"high\") {\n        // Cập nhật trạng thái thành \"high\"\n        context.state = \"high\";\n\n        // Gửi thông báo email\n        msg.topic = \"⚠️ CẢNH BÁO: NHIỆT ĐỘ CAO HÃY ĐIỀU CHỈNH NGAY !!!\";\n        msg.payload = \"Nhiệt độ hiện tại là: \" + temperature + \"°C bạn nên bật điều hòa.\";\n        return msg;\n    }\n} else {\n    // Cập nhật trạng thái thành \"normal\" khi nhiệt độ trở về bình thường\n    context.state = \"normal\";\n}\n\nreturn null; // Không gửi gì nếu không có thay đổi trạng thái\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 910,
+        "y": 240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "7ee0317bd9164006",
+        "type": "e-mail",
+        "z": "f0d3c1b35c90a760",
+        "g": "1a4b088f8a1ff0d2",
+        "server": "smtp.gmail.com",
+        "port": "465",
+        "authtype": "BASIC",
+        "saslformat": true,
+        "token": "oauth2Response.access_token",
+        "secure": true,
+        "tls": true,
+        "name": "nglnganh143@gmail.com",
+        "dname": "Alarm Temperature",
+        "x": 1230,
+        "y": 240,
+        "wires": [],
+        "info": "Cảnh báo: Nhiệt độ đã vượt quá 30°C. Nhiệt độ hiện tại là {{payload}}°C."
+    },
+    {
+        "id": "ffa3b4fbda140326",
+        "type": "e-mail",
+        "z": "f0d3c1b35c90a760",
+        "g": "1a4b088f8a1ff0d2",
+        "server": "smtp.gmail.com",
+        "port": "465",
+        "authtype": "BASIC",
+        "saslformat": true,
+        "token": "oauth2Response.access_token",
+        "secure": true,
+        "tls": true,
+        "name": "nglnganh143@gmail.com",
+        "dname": "Alarm Temperature",
+        "x": 1090,
+        "y": 180,
+        "wires": [],
+        "info": "Cảnh báo: Nhiệt độ đã vượt quá 30°C. Nhiệt độ hiện tại là {{payload}}°C."
+    },
+    {
+        "id": "d4ec955dd89127f3",
+        "type": "function",
+        "z": "f0d3c1b35c90a760",
+        "g": "1a4b088f8a1ff0d2",
+        "name": "function alarm AQI MAIL",
+        "func": "// Khởi tạo biến trạng thái nếu chưa có\ncontext.state = context.state || \"normal\";\n\n// Lấy giá trị AQI từ msg.payload\nvar AQI = parseFloat(msg.payload);\n\n// Kiểm tra nếu AQI lớn hơn 50\nif (AQI > 50) {\n    if (context.state !== \"high\") {\n        // Cập nhật trạng thái thành \"high\"\n        context.state = \"high\";\n\n        // Gửi thông báo email\n        msg.topic = \"⚠️ CẢNH BÁO: CHỈ SỐ AQI ĐANG CAO HÃY ĐIỀU CHỈNH NGAY !!!\";\n        msg.payload = \"AQI hiện tại là: \" + AQI + \" bạn nên bật máy lọc không khí.\";\n        return msg;\n    }\n} else {\n    // Cập nhật trạng thái thành \"normal\" khi AQI trở về bình thường\n    context.state = \"normal\";\n}\n\nreturn null; // Không gửi gì nếu không có thay đổi trạng thái\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 810,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "72abc7acc11e4df0",
+        "type": "mqtt out",
+        "z": "f0d3c1b35c90a760",
+        "g": "427a2362f455543e",
+        "name": "",
+        "topic": "node2/control/mode",
+        "qos": "1",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "ce842d4e17c1ed98",
+        "x": 400,
+        "y": 900,
+        "wires": []
+    },
+    {
+        "id": "df4dacdf8e9bdc5e",
+        "type": "mqtt out",
+        "z": "f0d3c1b35c90a760",
+        "g": "427a2362f455543e",
+        "name": "",
+        "topic": "node2/control/device1",
+        "qos": "1",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "ce842d4e17c1ed98",
+        "x": 400,
+        "y": 1000,
+        "wires": []
+    },
+    {
+        "id": "5add5546bd26afeb",
+        "type": "mqtt out",
+        "z": "f0d3c1b35c90a760",
+        "g": "427a2362f455543e",
+        "name": "",
+        "topic": "node2/control/device2",
+        "qos": "1",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "ce842d4e17c1ed98",
+        "x": 400,
+        "y": 1100,
+        "wires": []
+    },
+    {
+        "id": "bb93055cf2e3af10",
+        "type": "ui_button",
+        "z": "f0d3c1b35c90a760",
+        "g": "427a2362f455543e",
+        "name": "",
+        "group": "f0c7505f15c5e48e",
+        "order": 2,
+        "width": "7",
+        "height": "1",
+        "passthru": false,
+        "label": "Button Update threshold AQI",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "button",
+        "topicType": "str",
+        "x": 640,
+        "y": 880,
+        "wires": [
+            [
+                "7f9c43a6e967b8ec"
+            ]
+        ]
+    },
+    {
+        "id": "6d58fba35ab85d06",
+        "type": "ui_button",
+        "z": "f0d3c1b35c90a760",
+        "g": "427a2362f455543e",
+        "name": "",
+        "group": "f0c7505f15c5e48e",
+        "order": 5,
+        "width": "7",
+        "height": "1",
+        "passthru": false,
+        "label": "Button Update threshold Temperature",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "button",
+        "topicType": "str",
+        "x": 670,
+        "y": 1020,
+        "wires": [
+            [
+                "6b525e4ef4aa5a53"
+            ]
+        ]
+    },
+    {
+        "id": "7f9c43a6e967b8ec",
+        "type": "function",
+        "z": "f0d3c1b35c90a760",
+        "g": "427a2362f455543e",
+        "name": "function threshold AQI",
+        "func": "if (msg.topic === \"input\") {\n    flow.set(\"thresholdAQI\", msg.payload);\n    return null; // Không gửi tiếp\n}\n\nif (msg.topic === \"button\") {\n    let threshold = flow.get(\"thresholdAQI\");\n    if (threshold !== undefined) {\n        return {\n            topic: \"esp32/control/aqi_threshold\",\n            payload: threshold\n        };\n    }\n}\n\nreturn null;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 880,
+        "y": 900,
+        "wires": [
+            [
+                "e71356afcab01dbb"
+            ]
+        ]
+    },
+    {
+        "id": "6b525e4ef4aa5a53",
+        "type": "function",
+        "z": "f0d3c1b35c90a760",
+        "g": "427a2362f455543e",
+        "name": "function threshold Temperature",
+        "func": "if (msg.topic === \"input\") {\n    flow.set(\"thresholdTemperature\", msg.payload);\n    return null; // Không gửi tiếp\n}\n\nif (msg.topic === \"button\") {\n    let threshold = flow.get(\"thresholdTemperature\");\n    if (threshold !== undefined) {\n        return {\n            topic: \"esp32/control/temp_threshold\",\n            payload: threshold\n        };\n    }\n}\n\nreturn null;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 990,
+        "y": 1020,
+        "wires": [
+            [
+                "5334a525b464b53e"
+            ]
+        ]
+    },
+    {
+        "id": "e71356afcab01dbb",
+        "type": "mqtt out",
+        "z": "f0d3c1b35c90a760",
+        "g": "427a2362f455543e",
+        "name": "",
+        "topic": "node2/control/aqi_threshold",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "ce842d4e17c1ed98",
+        "x": 860,
+        "y": 960,
+        "wires": []
+    },
+    {
+        "id": "5334a525b464b53e",
+        "type": "mqtt out",
+        "z": "f0d3c1b35c90a760",
+        "g": "427a2362f455543e",
+        "name": "",
+        "topic": "node2/control/temp_threshold",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "ce842d4e17c1ed98",
+        "x": 1010,
+        "y": 1100,
+        "wires": []
+    },
+    {
+        "id": "ba705396f1387065",
+        "type": "ui_text_input",
+        "z": "f0d3c1b35c90a760",
+        "g": "427a2362f455543e",
+        "name": "",
+        "label": "Text AQI Threshold",
+        "tooltip": "",
+        "group": "f0c7505f15c5e48e",
+        "order": 1,
+        "width": "7",
+        "height": "1",
+        "passthru": true,
+        "mode": "number",
+        "delay": 300,
+        "topic": "input",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 610,
+        "y": 920,
+        "wires": [
+            [
+                "7f9c43a6e967b8ec"
+            ]
+        ]
+    },
+    {
+        "id": "68aadf6bb2c3c11e",
+        "type": "ui_text_input",
+        "z": "f0d3c1b35c90a760",
+        "g": "427a2362f455543e",
+        "name": "",
+        "label": "Text Temperature Threshold",
+        "tooltip": "",
+        "group": "f0c7505f15c5e48e",
+        "order": 4,
+        "width": "7",
+        "height": "1",
+        "passthru": true,
+        "mode": "number",
+        "delay": 300,
+        "topic": "input",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 640,
+        "y": 1060,
+        "wires": [
+            [
+                "6b525e4ef4aa5a53"
+            ]
+        ]
+    },
+    {
+        "id": "778ca249cb3e3a9e",
+        "type": "ui_button",
+        "z": "f0d3c1b35c90a760",
+        "g": "427a2362f455543e",
+        "name": "",
+        "group": "0a3c3b94bd1b8fbd",
+        "order": 1,
+        "width": "8",
+        "height": "1",
+        "passthru": false,
+        "label": "Button ON Auto",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "ON",
+        "payloadType": "str",
+        "topic": "control/mode",
+        "topicType": "msg",
+        "x": 140,
+        "y": 880,
+        "wires": [
+            [
+                "72abc7acc11e4df0"
+            ]
+        ]
+    },
+    {
+        "id": "22177f1853b9fc74",
+        "type": "ui_button",
+        "z": "f0d3c1b35c90a760",
+        "g": "427a2362f455543e",
+        "name": "",
+        "group": "0a3c3b94bd1b8fbd",
+        "order": 2,
+        "width": "8",
+        "height": "1",
+        "passthru": false,
+        "label": "Button OFF Auto",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "OFF",
+        "payloadType": "str",
+        "topic": "control/mode",
+        "topicType": "msg",
+        "x": 150,
+        "y": 920,
+        "wires": [
+            [
+                "72abc7acc11e4df0"
+            ]
+        ]
+    },
+    {
+        "id": "b72ec5a16bce552f",
+        "type": "ui_button",
+        "z": "f0d3c1b35c90a760",
+        "g": "427a2362f455543e",
+        "name": "",
+        "group": "0a3c3b94bd1b8fbd",
+        "order": 4,
+        "width": "8",
+        "height": "1",
+        "passthru": false,
+        "label": "Button ON Device 1",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "ON",
+        "payloadType": "str",
+        "topic": "control/device1",
+        "topicType": "msg",
+        "x": 160,
+        "y": 980,
+        "wires": [
+            [
+                "df4dacdf8e9bdc5e"
+            ]
+        ]
+    },
+    {
+        "id": "b0ca87723c3fe0f8",
+        "type": "ui_button",
+        "z": "f0d3c1b35c90a760",
+        "g": "427a2362f455543e",
+        "name": "",
+        "group": "0a3c3b94bd1b8fbd",
+        "order": 5,
+        "width": "8",
+        "height": "1",
+        "passthru": false,
+        "label": "Button OFF Device 1",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "OFF",
+        "payloadType": "str",
+        "topic": "control/device1",
+        "topicType": "msg",
+        "x": 160,
+        "y": 1020,
+        "wires": [
+            [
+                "df4dacdf8e9bdc5e"
+            ]
+        ]
+    },
+    {
+        "id": "c696c1be08b2e196",
+        "type": "ui_button",
+        "z": "f0d3c1b35c90a760",
+        "g": "427a2362f455543e",
+        "name": "",
+        "group": "0a3c3b94bd1b8fbd",
+        "order": 7,
+        "width": "8",
+        "height": "1",
+        "passthru": false,
+        "label": "Button ON Device 2",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "ON",
+        "payloadType": "str",
+        "topic": "control/device2",
+        "topicType": "msg",
+        "x": 160,
+        "y": 1080,
+        "wires": [
+            [
+                "5add5546bd26afeb"
+            ]
+        ]
+    },
+    {
+        "id": "84fbb07a243c6d6f",
+        "type": "ui_button",
+        "z": "f0d3c1b35c90a760",
+        "g": "427a2362f455543e",
+        "name": "",
+        "group": "0a3c3b94bd1b8fbd",
+        "order": 8,
+        "width": "8",
+        "height": "1",
+        "passthru": false,
+        "label": "Button OFF Device 2",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "OFF",
+        "payloadType": "str",
+        "topic": "control/device2",
+        "topicType": "msg",
+        "x": 160,
+        "y": 1120,
+        "wires": [
+            [
+                "5add5546bd26afeb"
+            ]
+        ]
+    },
+    {
+        "id": "817deffd2d23f2af",
+        "type": "http in",
+        "z": "f0d3c1b35c90a760",
+        "g": "81622da710a611df",
+        "name": "Receive HTTP Control Node 2",
+        "url": "/node2/control",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 620,
+        "y": 400,
+        "wires": [
+            [
+                "1c70984646c41e0e"
+            ]
+        ]
+    },
+    {
+        "id": "1c70984646c41e0e",
+        "type": "function",
+        "z": "f0d3c1b35c90a760",
+        "g": "81622da710a611df",
+        "name": "Process Request",
+        "func": "let topic = '';\nlet payload;\n\n// Xử lý điều khiển thiết bị (Mode, Device1, Device2)\nif (msg.payload.type && msg.payload.state) {\n    let type = msg.payload.type;\n    let state = msg.payload.state;\n\n    if (type === 'mode') {\n        topic = 'node2/control/mode';\n    } else if (type === 'device1') {\n        topic = 'node2/control/device1';\n    } else if (type === 'device2') {\n        topic = 'node2/control/device2';\n    }\n    payload = state;\n}\n\n// Xử lý ngưỡng AQI\nif (msg.payload.aqi_threshold !== undefined) {\n    topic = 'node2/control/aqi_threshold';\n    payload = msg.payload.aqi_threshold;\n}\n\n// Xử lý ngưỡng nhiệt độ\nif (msg.payload.temperature_threshold !== undefined) {\n    topic = 'node2/control/temp_threshold';\n    payload = msg.payload.temperature_threshold;\n}\n\n// Kiểm tra nếu không có topic hợp lệ\nif (topic) {\n    msg.topic = topic;\n    msg.payload = payload;\n} else {\n    msg.payload = { error: 'Invalid request' };\n    msg.statusCode = 400;\n    return [null, msg];\n}\n\nreturn [msg, null];",
+        "outputs": 2,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 870,
+        "y": 400,
+        "wires": [
+            [
+                "8050effb2738096f",
+                "04d802c64bfc6ac5"
+            ],
+            [
+                "b61169aee16ece1e"
+            ]
+        ]
+    },
+    {
+        "id": "8050effb2738096f",
+        "type": "mqtt out",
+        "z": "f0d3c1b35c90a760",
+        "g": "81622da710a611df",
+        "name": "",
+        "topic": "",
+        "qos": "0",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "ce842d4e17c1ed98",
+        "x": 1030,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "04d802c64bfc6ac5",
+        "type": "change",
+        "z": "f0d3c1b35c90a760",
+        "g": "81622da710a611df",
+        "name": "Set Success Response",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{ \"success\": true, \"message\": \"Published to topic: \" & topic }",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "statusCode",
+                "pt": "msg",
+                "to": "200",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1110,
+        "y": 400,
+        "wires": [
+            [
+                "4ca7151ca74a55de"
+            ]
+        ]
+    },
+    {
+        "id": "b61169aee16ece1e",
+        "type": "http response",
+        "z": "f0d3c1b35c90a760",
+        "g": "81622da710a611df",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1030,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "4ca7151ca74a55de",
+        "type": "http response",
+        "z": "f0d3c1b35c90a760",
+        "g": "81622da710a611df",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1290,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "e1b11d3934a15f7a",
+        "type": "mqtt in",
+        "z": "f0d3c1b35c90a760",
+        "g": "3aa83388beb4db91",
+        "name": "",
+        "topic": "node2/state/mode",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "ce842d4e17c1ed98",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 150,
+        "y": 540,
+        "wires": [
+            [
+                "b16ca22b359dc3f1",
+                "f7b16410e2649c12"
+            ]
+        ]
+    },
+    {
+        "id": "54b71c2fa3c65779",
+        "type": "mqtt in",
+        "z": "f0d3c1b35c90a760",
+        "g": "3aa83388beb4db91",
+        "name": "",
+        "topic": "node2/state/device1",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "ce842d4e17c1ed98",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 150,
+        "y": 640,
+        "wires": [
+            [
+                "64d5f784ec27f875",
+                "8a5ab80419cdf625"
+            ]
+        ]
+    },
+    {
+        "id": "eed55c8386508587",
+        "type": "mqtt in",
+        "z": "f0d3c1b35c90a760",
+        "g": "3aa83388beb4db91",
+        "name": "",
+        "topic": "node2/state/device2",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "ce842d4e17c1ed98",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 150,
+        "y": 740,
+        "wires": [
+            [
+                "0885345fcf3f7a1a",
+                "af7f418b10fb068a"
+            ]
+        ]
+    },
+    {
+        "id": "d8de36b00fa2ca33",
+        "type": "websocket out",
+        "z": "f0d3c1b35c90a760",
+        "g": "3aa83388beb4db91",
+        "name": "",
+        "server": "1cdf9f6b9f688715",
+        "client": "",
+        "x": 660,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "83cdfdda4256146a",
+        "type": "websocket out",
+        "z": "f0d3c1b35c90a760",
+        "g": "3aa83388beb4db91",
+        "name": "",
+        "server": "1cdf9f6b9f688715",
+        "client": "",
+        "x": 660,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "3aae8d223e818fda",
+        "type": "websocket out",
+        "z": "f0d3c1b35c90a760",
+        "g": "3aa83388beb4db91",
+        "name": "",
+        "server": "1cdf9f6b9f688715",
+        "client": "",
+        "x": 660,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "b16ca22b359dc3f1",
+        "type": "function",
+        "z": "f0d3c1b35c90a760",
+        "g": "3aa83388beb4db91",
+        "name": "function pop state mode websocket",
+        "func": "msg.payload = {\n    type: msg.topic.split('/').pop(), // Lấy \"mode\", \"device1\", hoặc \"device2\" từ topic\n    state: msg.payload // Trạng thái ON hoặc OFF\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 580,
+        "wires": [
+            [
+                "d8de36b00fa2ca33"
+            ]
+        ]
+    },
+    {
+        "id": "64d5f784ec27f875",
+        "type": "function",
+        "z": "f0d3c1b35c90a760",
+        "g": "3aa83388beb4db91",
+        "name": "function pop state device 1 websocket",
+        "func": "msg.payload = {\n    type: msg.topic.split('/').pop(), // Lấy \"mode\", \"device1\", hoặc \"device2\" từ topic\n    state: msg.payload // Trạng thái ON hoặc OFF\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 410,
+        "y": 680,
+        "wires": [
+            [
+                "83cdfdda4256146a"
+            ]
+        ]
+    },
+    {
+        "id": "0885345fcf3f7a1a",
+        "type": "function",
+        "z": "f0d3c1b35c90a760",
+        "g": "3aa83388beb4db91",
+        "name": "function pop state device 2 websocket",
+        "func": "msg.payload = {\n    type: msg.topic.split('/').pop(), // Lấy \"mode\", \"device1\", hoặc \"device2\" từ topic\n    state: msg.payload // Trạng thái ON hoặc OFF\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 410,
+        "y": 780,
+        "wires": [
+            [
+                "3aae8d223e818fda"
+            ]
+        ]
+    },
+    {
+        "id": "f7b16410e2649c12",
+        "type": "ui_led",
+        "z": "f0d3c1b35c90a760",
+        "g": "3aa83388beb4db91",
+        "order": 5,
+        "group": "722a1c09ddcbe5cb",
+        "width": "7",
+        "height": "1",
+        "label": "State Mode",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "colorForValue": [
+            {
+                "color": "#ff0000",
+                "value": "OFF",
+                "valueType": "str"
+            },
+            {
+                "color": "#008000",
+                "value": "ON",
+                "valueType": "str"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showGlow": true,
+        "name": "led state mode",
+        "x": 380,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "8a5ab80419cdf625",
+        "type": "ui_led",
+        "z": "f0d3c1b35c90a760",
+        "g": "3aa83388beb4db91",
+        "order": 8,
+        "group": "722a1c09ddcbe5cb",
+        "width": "7",
+        "height": "1",
+        "label": "State Device1",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "colorForValue": [
+            {
+                "color": "#ff0000",
+                "value": "OFF",
+                "valueType": "str"
+            },
+            {
+                "color": "#008000",
+                "value": "ON",
+                "valueType": "str"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showGlow": true,
+        "name": "led state device 1",
+        "x": 390,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "af7f418b10fb068a",
+        "type": "ui_led",
+        "z": "f0d3c1b35c90a760",
+        "g": "3aa83388beb4db91",
+        "order": 11,
+        "group": "722a1c09ddcbe5cb",
+        "width": "7",
+        "height": "1",
+        "label": "State Device2",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "colorForValue": [
+            {
+                "color": "#ff0000",
+                "value": "OFF",
+                "valueType": "str"
+            },
+            {
+                "color": "#008000",
+                "value": "ON",
+                "valueType": "str"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showGlow": true,
+        "name": "led state device 2",
+        "x": 390,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "7b91fe4453c03686",
+        "type": "ui_spacer",
+        "z": "f0d3c1b35c90a760",
+        "name": "spacer",
+        "group": "65254e5133e3dd61",
+        "order": 2,
+        "width": "7",
+        "height": "1"
+    },
+    {
+        "id": "a4ceedc9742b4e8c",
+        "type": "ui_spacer",
+        "z": "f0d3c1b35c90a760",
+        "name": "spacer",
+        "group": "da981a2896f66e34",
+        "order": 3,
+        "width": "8",
+        "height": "1"
+    },
+    {
+        "id": "8f2f63f7fdbfb908",
+        "type": "ui_spacer",
+        "z": "f0d3c1b35c90a760",
+        "name": "spacer",
+        "group": "da981a2896f66e34",
+        "order": 6,
+        "width": "8",
+        "height": "1"
+    },
+    {
+        "id": "d0e5b87ac9446323",
+        "type": "ui_spacer",
+        "z": "f0d3c1b35c90a760",
+        "name": "spacer",
+        "group": "f0c7505f15c5e48e",
+        "order": 3,
+        "width": "7",
+        "height": "1"
+    },
+    {
+        "id": "1c095949b62b03c8",
+        "type": "ui_spacer",
+        "z": "f0d3c1b35c90a760",
+        "name": "spacer",
+        "group": "0a3c3b94bd1b8fbd",
+        "order": 6,
+        "width": "8",
+        "height": "1"
+    },
+    {
+        "id": "d2ac387094e06b3f",
+        "type": "ui_spacer",
+        "z": "f0d3c1b35c90a760",
+        "name": "spacer",
+        "group": "0a3c3b94bd1b8fbd",
+        "order": 3,
+        "width": "8",
+        "height": "1"
+    },
+    {
+        "id": "ce842d4e17c1ed98",
+        "type": "mqtt-broker",
+        "name": "IPMQTT",
+        "broker": "192.168.1.17",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "3260720a0b55ed8b",
+        "type": "ui_group",
+        "name": "View",
+        "tab": "a09d8ce07ae408e3",
+        "order": 1,
+        "disp": true,
+        "width": "25",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "ecbac3b738bfb9e1",
+        "type": "MySQLdatabase",
+        "name": "Database Sensor",
+        "host": "127.0.0.1",
+        "port": "3306",
+        "db": "sensor_data",
+        "tz": "",
+        "charset": "UTF8"
+    },
+    {
+        "id": "f0c7505f15c5e48e",
+        "type": "ui_group",
+        "name": "SET THRESHOLD",
+        "tab": "a09d8ce07ae408e3",
+        "order": 2,
+        "disp": true,
+        "width": "8",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "0a3c3b94bd1b8fbd",
+        "type": "ui_group",
+        "name": "Control",
+        "tab": "a09d8ce07ae408e3",
+        "order": 4,
+        "disp": true,
+        "width": "9",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "1cdf9f6b9f688715",
+        "type": "websocket-listener",
+        "path": "/ws/node2/state",
+        "wholemsg": "false"
+    },
+    {
+        "id": "722a1c09ddcbe5cb",
+        "type": "ui_group",
+        "name": "STATE MODE",
+        "tab": "a09d8ce07ae408e3",
+        "order": 3,
+        "disp": true,
+        "width": "8",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "65254e5133e3dd61",
+        "type": "ui_group",
+        "name": "SET THRESHOLD",
+        "tab": "3fef2f01f1ae5d7c",
+        "order": 2,
+        "disp": true,
+        "width": "8",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "da981a2896f66e34",
+        "type": "ui_group",
+        "name": "Control",
+        "tab": "3fef2f01f1ae5d7c",
+        "order": 4,
+        "disp": true,
+        "width": "9",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "a09d8ce07ae408e3",
+        "type": "ui_tab",
+        "name": "Node2",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "3fef2f01f1ae5d7c",
+        "type": "ui_tab",
+        "name": "Node1",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]

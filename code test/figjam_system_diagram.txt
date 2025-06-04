@@ -1,0 +1,99 @@
+FigJam System Architecture Layout Instructions
+
+1. COMPONENTS PLACEMENT
+
+A. SENSORS GROUP (Top)
+   Position: Top of canvas
+   Components (left to right):
+   - MQ-135: [Rectangle] Label "MQ-135 Air Quality"
+   - DHT11: [Rectangle] Label "DHT11 Temp & Humidity"
+   - BMP280: [Rectangle] Label "BMP280 Pressure"
+   - AHT20: [Rectangle] Label "AHT20 Temp & Humidity"
+   - GP2Y1014AU0F: [Rectangle] Label "GP2Y1014AU0F Dust"
+
+B. ESP32 GROUP (Upper Middle)
+   Position: Below Sensors
+   Components:
+   - Main Controller: [Rectangle] Label "ESP32 Main Controller"
+   - WiFi Module: [Rectangle] Label "WiFi Module"
+   Color: Light Blue (#ddf)
+
+C. RASPBERRY PI GROUP (Lower Middle)
+   Position: Below ESP32
+   Components (arranged in flow):
+   - MQTT Broker: [Rectangle] Label "Mosquitto MQTT Broker"
+   - Node-RED: [Rectangle] Label "Node-RED"
+   - Database: [Rectangle] Label "MySQL Database"
+   - Web Server: [Rectangle] Label "PHP Web Server"
+   Color: Light Red (#fdd)
+
+D. VISUALIZATION GROUP (Bottom)
+   Position: Bottom of canvas
+   Components:
+   - Dashboard: [Rectangle] Label "Web Dashboard"
+   - Alerts: [Rectangle] Label "Alert System"
+   Color: Light Gray (#ddd)
+
+2. CONNECTIONS
+
+A. Sensor to ESP32 Connections
+   - Draw arrows from each sensor to ESP32 Main Controller
+   Style: Solid lines, Dark Gray (#333)
+
+B. ESP32 to Raspberry Pi Connection
+   - Arrow from WiFi Module to MQTT Broker
+   Label: "MQTT Protocol"
+   Style: Bold line, Dark Gray (#333)
+
+C. Internal Raspberry Pi Connections
+   - MQTT Broker → Node-RED
+   - Node-RED → MySQL Database
+   - MySQL Database → PHP Web Server
+   Style: Solid lines, Dark Gray (#333)
+
+D. Output Connections
+   - PHP Web Server → Web Dashboard
+   - Node-RED → Alert System
+   Style: Solid lines, Dark Gray (#333)
+
+3. STYLING
+
+A. Components Colors
+   - Sensors: 
+     * MQ-135: Light Pink (#f9d)
+     * DHT11/AHT20: Light Blue (#9df)
+     * BMP280: Light Orange (#fd9)
+     * GP2Y: Light Green (#df9)
+   - ESP32: Light Blue (#ddf)
+   - Raspberry Pi Services:
+     * MQTT: Light Green (#dfd)
+     * Node-RED: Light Yellow (#ffd)
+     * Database: Light Cyan (#dff)
+     * Web Server: Light Purple (#fdf)
+   - Visualization: Light Gray (#ddd)
+
+B. Text Formatting
+   - Component Labels: Bold, Sans-serif
+   - Connection Labels: Regular, Sans-serif
+   - Group Labels: Bold, Larger size
+
+4. GROUPS/CONTAINERS
+
+Create containers with labels for:
+- "Sensors"
+- "ESP32 Dev Module"
+- "Raspberry Pi 4"
+- "Visualization"
+
+5. LAYOUT DIMENSIONS
+
+Recommended canvas size: 1920x1080
+Component spacing: 100px between major groups
+Component size: 200x100px rectangles
+
+6. ADDITIONAL NOTES
+
+- Ensure all components are aligned properly within their groups
+- Use consistent spacing between components
+- Add shadows to main group containers for depth
+- Use rounded corners (8px radius) for all components

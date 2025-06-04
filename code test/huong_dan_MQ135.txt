@@ -1,0 +1,86 @@
+HƯỚNG DẪN KẾT NỐI VÀ LẬP TRÌNH CẢM BIẾN MQ135 VỚI ARDUINO UNO
+
+1. GIỚI THIỆU
+MQ135 là cảm biến khí có khả năng phát hiện nhiều loại khí khác nhau như NH3, NOx, CO2, benzen, khói, v.v.
+
+2. SƠ ĐỒ ĐẤU NỐI
+Cảm biến MQ135 -> Arduino UNO
+- VCC -> 5V
+- GND -> GND
+- AOUT -> A0 (Chân analog để đọc giá trị)
+- DOUT -> D2 (Chân digital để đọc ngưỡng, tùy chọn)
+
+3. GIẢI THÍCH CÁC CHÂN
+- VCC: Cấp nguồn 5V
+- GND: Nối đất
+- AOUT: Đầu ra analog (0-1023)
+- DOUT: Đầu ra digital (0/1, dựa vào chiết áp trên module)
+
+4. CODE MẪU
+```cpp
+/*
+ * Code test cảm biến MQ135
+ * Kết nối: 
+ * - VCC -> 5V
+ * - GND -> GND
+ * - AOUT -> A0
+ * - DOUT -> D2
+ */
+
+// Định nghĩa chân
+const int AOUT_PIN = A0; // Chân đọc giá trị analog
+const int DOUT_PIN = 2;  // Chân đọc giá trị digital
+
+void setup() {
+  Serial.begin(9600);  // Khởi tạo giao tiếp Serial
+  pinMode(DOUT_PIN, INPUT); // Cấu hình chân digital là INPUT
+  
+  // Chờ cảm biến khởi động (khoảng 20 giây)
+  Serial.println("Đang khởi động cảm biến...");
+  delay(20000);
+  Serial.println("Cảm biến đã sẵn sàng!");
+}
+
+void loop() {
+  // Đọc giá trị analog
+  int giaTriAnalog = analogRead(AOUT_PIN);
+  
+  // Đọc giá trị digital
+  int giaTriDigital = digitalRead(DOUT_PIN);
+  
+  // Hiển thị giá trị lên Serial Monitor
+  Serial.print("Giá trị Analog: ");
+  Serial.print(giaTriAnalog);
+  Serial.print("\t Giá trị Digital: ");
+  Serial.println(giaTriDigital);
+  
+  // Đợi 1 giây trước khi đọc lại
+  delay(1000);
+}
+```
+
+5. HƯỚNG DẪN SỬ DỤNG
+1. Đấu nối cảm biến theo sơ đồ trên
+2. Tải code lên Arduino UNO
+3. Mở Serial Monitor (tốc độ 9600 baud)
+4. Chờ 20 giây để cảm biến khởi động
+5. Quan sát giá trị hiển thị:
+   - Giá trị Analog (0-1023): càng cao thì nồng độ khí càng lớn
+   - Giá trị Digital (0/1): 1 khi vượt ngưỡng (điều chỉnh bằng chiết áp)
+
+6. LƯU Ý
+- Cần chờ cảm biến khởi động (~20 giây) để có kết quả chính xác
+- Nên đặt cảm biến ở nơi thoáng khí
+- Có thể điều chỉnh độ nhạy bằng chiết áp trên module
+- Giá trị analog chỉ mang tính tương đối, cần hiệu chuẩn để đo chính xác
+
+7. XỬ LÝ SỰ CỐ
+1. Không đọc được giá trị:
+   - Kiểm tra lại đấu nối
+   - Đảm bảo cấp nguồn 5V đúng
+   - Kiểm tra code đúng chân cắm
+
+2. Giá trị không ổn định:
+   - Đợi cảm biến khởi động đủ thời gian
+   - Kiểm tra nhiễu từ môi trường
+   - Thử thay đổi vị trí đặt cảm biến

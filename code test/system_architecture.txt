@@ -1,0 +1,56 @@
+graph TB
+    subgraph Sensors
+        MQ135[MQ-135<br>Air Quality]
+        DHT11[DHT11<br>Temp & Humidity]
+        BMP280[BMP280<br>Pressure]
+        AHT20[AHT20<br>Temp & Humidity]
+        GP2Y[GP2Y1014AU0F<br>Dust]
+    end
+
+    subgraph ESP32[ESP32 Dev Module]
+        WF[WiFi Module]
+        MC[Main Controller]
+        MQ135 --> MC
+        DHT11 --> MC
+        BMP280 --> MC
+        AHT20 --> MC
+        GP2Y --> MC
+        MC --> WF
+    end
+
+    subgraph RPI[Raspberry Pi 4]
+        MQTT[Mosquitto<br>MQTT Broker]
+        NR[Node-RED]
+        DB[MySQL<br>Database]
+        WS[PHP<br>Web Server]
+        
+        MQTT --> NR
+        NR --> DB
+        DB --> WS
+    end
+
+    subgraph Visualization
+        DASH[Web Dashboard]
+        ALERT[Alert System]
+    end
+
+    WF -->|MQTT Protocol| MQTT
+    WS --> DASH
+    NR --> ALERT
+
+    style MQ135 fill:#f9d,stroke:#333,stroke-width:2px
+    style DHT11 fill:#9df,stroke:#333,stroke-width:2px
+    style BMP280 fill:#fd9,stroke:#333,stroke-width:2px
+    style AHT20 fill:#9df,stroke:#333,stroke-width:2px
+    style GP2Y fill:#df9,stroke:#333,stroke-width:2px
+    
+    style ESP32 fill:#ddf,stroke:#333,stroke-width:4px
+    style RPI fill:#fdd,stroke:#333,stroke-width:4px
+    
+    style MQTT fill:#dfd,stroke:#333,stroke-width:2px
+    style NR fill:#ffd,stroke:#333,stroke-width:2px
+    style DB fill:#dff,stroke:#333,stroke-width:2px
+    style WS fill:#fdf,stroke:#333,stroke-width:2px
+    
+    style DASH fill:#ddd,stroke:#333,stroke-width:2px
+    style ALERT fill:#fdd,stroke:#333,stroke-width:2px

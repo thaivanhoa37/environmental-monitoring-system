@@ -1,0 +1,198 @@
+Dựa trên yêu cầu của bạn và thông tin từ dự án trước đó, tôi hiểu bạn muốn kết nối đầy đủ (full kết nối) cho dự án sử dụng ESP32 với các thành phần bao gồm cảm biến bụi GP2Y1014AU0F, cảm biến DHT11, màn hình OLED SSD1306, nút bấm, và thiết bị điều khiển (relay). Tôi sẽ cung cấp sơ đồ kết nối chi tiết cho tất cả các thành phần này, cùng với lưu ý để đảm bảo hệ thống hoạt động ổn định. Vì bạn đã xác nhận sử dụng cảm biến bụi GP2Y1014AU0F, tôi sẽ tích hợp hướng dẫn kết nối cụ thể cho cảm biến này vào sơ đồ tổng thể.
+
+Tổng quan dự án
+Dự án sử dụng ESP32 để:
+
+Đo nồng độ bụi PM2.5 bằng cảm biến GP2Y1014AU0F.
+Đo nhiệt độ và độ ẩm bằng cảm biến DHT11.
+Hiển thị dữ liệu trên màn hình OLED SSD1306 (giao tiếp I2C).
+Điều khiển chế độ (auto/manual) và hai thiết bị (Device 1, Device 2) qua ba nút bấm.
+Gửi/nhận dữ liệu qua MQTT và hỗ trợ cấu hình WiFi/MQTT qua AP mode.
+Các chân GPIO được sử dụng (dựa trên code trước đó):
+
+GP2Y1014AU0F: GPIO 34 (Vo), GPIO 25 (LED).
+DHT11: GPIO 4 (Data).
+OLED SSD1306: GPIO 21 (SDA), GPIO 22 (SCL).
+Nút bấm: GPIO 16 (Mode), GPIO 17 (Device 1), GPIO 18 (Device 2).
+Relay: GPIO 26 (Device 1), GPIO 27 (Device 2).
+Sơ đồ kết nối đầy đủ
+Dưới đây là bảng kết nối chi tiết cho tất cả các thành phần, cùng với mô tả cách đấu nối và linh kiện bổ sung cần thiết.
+
+Thành phần	Chân	Kết nối với ESP32	Ghi chú
+Cảm biến bụi GP2Y1014AU0F	V-LED (1)	5V qua điện trở 150Ω	Thêm tụ 220µF (cực dương vào V-LED, cực âm vào LED-GND).
+LED-GND (2)	GND	Kết nối chung GND với ESP32.
+LED (3)	GPIO 25	Điều khiển bật/tắt LED hồng ngoại.
+S-GND (4)	GND	Kết nối chung GND với ESP32.
+Vo (5)	GPIO 34	Đọc tín hiệu analog (đo nồng độ bụi).
+Vcc (6)	5V	Cấp nguồn cho cảm biến.
+Cảm biến DHT11	Vcc	3.3V hoặc 5V	DHT11 hoạt động ở cả 3.3V và 5V.
+GND	GND	Kết nối chung GND.
+Data	GPIO 4	Thêm điện trở kéo lên 4.7kΩ hoặc 10kΩ giữa Data và Vcc.
+Màn hình OLED SSD1306	Vcc	3.3V	Cấp nguồn cho OLED.
+GND	GND	Kết nối chung GND.
+SCL	GPIO 22	I2C SCL (mặc định trên ESP32).
+SDA	GPIO 21	I2C SDA (mặc định trên ESP32).
+Nút bấm Mode	Một chân	GPIO 16	Sử dụng INPUT_PULLUP, không cần điện trở kéo lên.
+Chân còn lại	GND	Kết nối để tạo tín hiệu LOW khi nhấn.
+Nút bấm Device 1	Một chân	GPIO 17	Tương tự nút Mode.
+Chân còn lại	GND	
+Nút bấm Device 2	Một chân	GPIO 18	Tương tự nút Mode.
+Chân còn lại	GND	
+Relay Device 1	Tín hiệu (IN)	GPIO 26	Điều khiển relay (HIGH/LOW).
+Vcc	5V	Cấp nguồn cho relay (hoặc nguồn ngoài nếu cần).
+GND	GND	Kết nối chung GND.
+Relay Device 2	Tín hiệu (IN)	GPIO 27	Tương tự Relay Device 1.
+Vcc	5V	
+GND	GND	
+Sơ đồ minh họa (mô tả dạng văn bản)
+text
+
+ESP32 5V ----[150Ω]---- V-LED (GP2Y1014AU0F) ----||---- LED-GND ---- GND
+                 (Tụ 220µF, + vào V-LED, - vào LED-GND)
+ESP32 GPIO 25 ---------------- LED (GP2Y1014AU0F)
+ESP32 GND -------------------- S-GND (GP2Y1014AU0F)
+ESP32 GPIO 34 ---------------- Vo (GP2Y1014AU0F)
+ESP32 5V --------------------- Vcc (GP2Y1014AU0F)
+
+ESP32 3.3V/5V ----[4.7kΩ]---- Data (DHT11) ---- GPIO 4
+ESP32 3.3V/5V ---------------- Vcc (DHT11)
+ESP32 GND -------------------- GND (DHT11)
+
+ESP32 3.3V ------------------- Vcc (OLED SSD1306)
+ESP32 GND -------------------- GND (OLED SSD1306)
+ESP32 GPIO 22 ---------------- SCL (OLED SSD1306)
+ESP32 GPIO 21 ---------------- SDA (OLED SSD1306)
+
+ESP32 GPIO 16 ---------------- Nút Mode ---- GND
+ESP32 GPIO 17 ---------------- Nút Device 1 ---- GND
+ESP32 GPIO 18 ---------------- Nút Device 2 ---- GND
+
+ESP32 GPIO 26 ---------------- IN (Relay Device 1)
+ESP32 5V --------------------- Vcc (Relay Device 1)
+ESP32 GND -------------------- GND (Relay Device 1)
+
+ESP32 GPIO 27 ---------------- IN (Relay Device 2)
+ESP32 5V --------------------- Vcc (Relay Device 2)
+ESP32 GND -------------------- GND (Relay Device 2)
+Linh kiện bổ sung
+Điện trở 150Ω: Giới hạn dòng cho LED hồng ngoại của GP2Y1014AU0F.
+Tụ điện 220µF: Lọc nhiễu cho GP2Y1014AU0F (chú ý cực tính: cực âm có vạch trắng).
+Điện trở kéo lên 4.7kΩ hoặc 10kΩ: Cho chân Data của DHT11.
+Breadboard hoặc PCB: Để kết nối các thành phần.
+Dây jumper: Đảm bảo chất lượng tốt, không lỏng.
+Nguồn ngoài (tùy chọn): Nếu dùng nhiều relay hoặc tải nặng, sử dụng nguồn 5V 2A riêng qua module nguồn (ví dụ: MB102).
+Lưu ý khi đấu nối
+Cảm biến bụi GP2Y1014AU0F:
+Điện trở và tụ: Không bỏ qua điện trở 150Ω và tụ 220µF, vì chúng đảm bảo LED hồng ngoại hoạt động ổn định và tín hiệu Vo chính xác.
+Cực tính tụ: Kiểm tra kỹ cực dương/âm của tụ 220µF trước khi kết nối.
+Nguồn 5V: GP2Y1014AU0F yêu cầu nguồn 5V. Nếu dùng nguồn 3.3V, tín hiệu Vo sẽ yếu và cần hiệu chỉnh lại công thức tính mật độ bụi.
+Lọc bụi: Đặt cảm biến ở nơi thoáng khí, tránh bụi lớn tích tụ trong khoang cảm biến.
+Cảm biến DHT11:
+Điện trở kéo lên: Nếu không có điện trở 4.7kΩ/10kΩ, tín hiệu Data có thể không ổn định, gây lỗi đọc (isnan).
+Kết nối chắc chắn: Dây Data dễ lỏng, kiểm tra kỹ trước khi chạy.
+Màn hình OLED SSD1306:
+Địa chỉ I2C: Code sử dụng địa chỉ 0x3C. Nếu OLED dùng 0x3D, sửa #define SCREEN_ADDRESS 0x3D trong code.
+Nguồn 3.3V: OLED hoạt động tốt với 3.3V, không cần 5V.
+Nút bấm:
+INPUT_PULLUP: Code sử dụng chế độ kéo lên nội bộ, nên không cần điện trở kéo lên bên ngoài.
+Tín hiệu LOW: Nút bấm phải tạo tín hiệu LOW khi nhấn (nối một chân với GND).
+Relay (Device 1, Device 2):
+Cách ly tải nặng: Nếu relay điều khiển thiết bị công suất lớn (đèn, động cơ), sử dụng nguồn riêng cho tải và đảm bảo relay có optocoupler.
+Nguồn cho relay: Relay 5V có thể dùng nguồn từ ESP32, nhưng nếu dùng nhiều relay, cân nhắc nguồn ngoài.
+Tín hiệu điều khiển: Relay thường kích hoạt ở mức LOW hoặc HIGH tùy model. Code hiện tại giả định HIGH để bật, nếu ngược lại, sửa logic trong TaskControl.
+Nguồn điện:
+ESP32: Cấp nguồn qua USB (5V) hoặc pin 3.3V-5V.
+Các thiết bị: Nếu dùng nhiều thành phần (GP2Y1014AU0F, relay), sử dụng nguồn ngoài 5V 2A qua breadboard hoặc module nguồn để tránh quá tải USB.
+GND chung: Tất cả các GND của ESP32, cảm biến, OLED, relay phải nối chung để đảm bảo tham chiếu điện áp đồng nhất.
+Kiểm tra kết nối:
+Dùng multimeter để xác nhận các chân được nối đúng (đặc biệt là Vcc, GND, và tín hiệu).
+Test từng thành phần riêng (ví dụ: chỉ kết nối GP2Y1014AU0F, chạy code mẫu để kiểm tra) trước khi tích hợp toàn bộ.
+Code mẫu kiểm tra GP2Y1014AU0F
+Nếu bạn muốn kiểm tra riêng cảm biến bụi trước khi tích hợp vào dự án, sử dụng code sau để xác nhận kết nối đúng:
+
+cpp
+
+#define measurePin 34 // Chân analog đọc Vo
+#define ledPower 25   // Chân digital điều khiển LED
+#define samplingTime 280
+#define deltaTime 40
+#define sleepTime 9680
+
+float voMeasured = 0;
+float calcVoltage = 0;
+float dustDensity = 0;
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(ledPower, OUTPUT);
+}
+
+void loop() {
+  digitalWrite(ledPower, LOW); // Bật LED
+  delayMicroseconds(samplingTime);
+  voMeasured = analogRead(measurePin); // Đọc giá trị
+  delayMicroseconds(deltaTime);
+  digitalWrite(ledPower, HIGH); // Tắt LED
+  delayMicroseconds(sleepTime);
+
+  // Chuyển đổi sang điện áp (ESP32: 3.3V, 4095 mức)
+  calcVoltage = voMeasured * (3.3 / 4095.0);
+
+  // Tính mật độ bụi (µg/m³)
+  dustDensity = 170 * calcVoltage - 0.1;
+  if (dustDensity < 0) dustDensity = 0;
+
+  Serial.print("Raw: ");
+  Serial.print(voMeasured);
+  Serial.print(" | Voltage: ");
+  Serial.print(calcVoltage);
+  Serial.print("V | Dust: ");
+  Serial.print(dustDensity);
+  Serial.println(" µg/m³");
+
+  delay(1000);
+}
+Dự kiến Serial Monitor:
+
+Trong môi trường sạch: Dust: 0-50 µg/m³.
+Gần khói/bụi: Dust: 100-300 µg/m³ hoặc cao hơn. Nếu không thấy giá trị hợp lý, kiểm tra lại điện trở 150Ω, tụ 220µF, và kết nối GND.
+Hành động tiếp theo
+Kết nối phần cứng:
+Thực hiện đấu nối theo bảng và sơ đồ trên.
+Kiểm tra từng thành phần riêng (GP2Y1014AU0F, DHT11, OLED, nút, relay) trước khi tích hợp.
+Đảm bảo GND chung và nguồn điện ổn định.
+Tải code đầy đủ:
+Sử dụng code từ phản hồi trước (full code trong <xaiArtifact>).
+Cài đặt thư viện: DHT, Adafruit_GFX, Adafruit_SSD1306, WiFi, PubSubClient, ESPAsyncWebServer, AsyncTCP.
+Xóa flash (Tools > Erase Flash > All Flash Contents) trước khi tải để tránh lỗi từ code cũ.
+Theo dõi Serial Monitor:
+Mở Serial Monitor (115200 baud) để kiểm tra log.
+Khi vào AP mode, dự kiến thấy:
+text
+
+AP Mode started
+AP IP address: 192.168.4.1
+OLED display initialized for AP Mode
+Async Web Server started
+TaskAPTimeout started
+AP Mode active for 5 seconds
+AP Mode active for 10 seconds
+AP Mode timeout: No client connected within 15 seconds, exiting AP Mode
+Nếu kẹt, gửi log đầy đủ kèm thời gian.
+Kiểm tra MQTT broker:
+Đảm bảo broker tại 192.168.1.2:1883 hoạt động (dùng ping 192.168.1.2 hoặc MQTT Explorer).
+Nếu không, thử broker công cộng:
+cpp
+
+char mqtt_server[32] = "broker.hivemq.com";
+Test AP mode:
+Kết nối vào WiFi ESP32_Config (mật khẩu: 12345678), truy cập 192.168.4.1 để cấu hình WiFi/MQTT.
+Nếu gặp lỗi
+Log không hiển thị timeout: Kiểm tra lại code đã tải đúng chưa, hoặc gửi log để tôi phân tích.
+Cảm biến không hoạt động:
+GP2Y1014AU0F: Kiểm tra điện trở 150Ω, tụ 220µF, và kết nối Vo (GPIO 34).
+DHT11: Kiểm tra điện trở kéo lên và dây Data.
+OLED: Kiểm tra địa chỉ I2C (0x3C hoặc 0x3D).
+Relay không bật: Xác nhận relay kích hoạt ở mức HIGH hay LOW, sửa logic trong TaskControl nếu cần.
+Hết bộ nhớ: Thêm log ESP.getFreeHeap() trong TaskAPTimeout và setup để kiểm tra heap.
+Bạn có cần tôi vẽ sơ đồ mạch chi tiết hơn (dạng hình ảnh, nếu hỗ trợ), điều chỉnh code (ví dụ: giảm timeout xuống 10 giây), hay giải thích thêm về cách test từng thành phần không?
