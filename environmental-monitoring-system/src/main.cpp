@@ -1,506 +1,658 @@
 #include <Arduino.h>
+#include <DHT.h>
+#include <math.h>
 #include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <EEPROM.h>
-#include <WebServer.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
-#include <Adafruit_AHTX0.h>
-#include <Adafruit_BMP280.h>
-#include <DHT.h>
-#include <MQUnifiedsensor.h>
+#include <ESPAsyncWebServer.h>
+#include <AsyncTCP.h>
+#include <Adafruit_BMP280.h>  // For BMP280
+#include <Adafruit_AHTX0.h>   // For AHT20
+#include <MQUnifiedsensor.h>  // For MQ135
 
-// Pin Definitions
-#define DHT_PIN 4
+// Function declarations
+String getConfigPage();
+bool setup_wifi();
+bool reconnect();
+void startAPMode();
+void TaskControl(void *pvParameters);
+void TaskMQTT(void *pvParameters);
+void TaskMQTTSubscribe(void *pvParameters);
+void TaskResetTimeout(void *pvParameters);
+void publishMQTTSensor();
+void mqtt_callback(char* topic, byte* payload, unsigned int length);
+
+// Topic definitions
+const char* TOPIC_STATE_DUST = "node1/state/dust";
+const char* TOPIC_STATE_AQI = "node1/state/aqi";
+const char* TOPIC_STATE_TEMPERATURE = "node1/state/temperature";
+const char* TOPIC_STATE_HUMIDITY = "node1/state/humidity";
+const char* TOPIC_STATE_CO2 = "node1/state/co2";          
+const char* TOPIC_STATE_PRESSURE = "node1/state/pressure"; 
+const char* TOPIC_STATE_ALT = "node1/state/altitude";     
+
+#define measurePin  13
+#define ledPower    12
+
+#define DHTPIN 4
 #define DHTTYPE DHT11
-#define DUST_LED_PIN 12   // GP2Y1014AU0F LED pin
-#define DUST_MEASURE_PIN 13  // GP2Y1014AU0F measure pin
-#define MQ135_PIN_A0 34  // MQ135 analog input
-#define MQ135_PIN_D0 35  // MQ135 digital input for threshold
 
-// OLED Display
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 #define OLED_RESET -1
 #define SCREEN_ADDRESS 0x3C
 
-// GP2Y1014AU0F Dust Sensor Timing
-#define samplingTime 280
-#define deltaTime 40
-#define sleepTime 9680
-
-// MQTT Topics
-#define TOPIC_STATE_TEMPERATURE1 "esp32/sensor/dht11/temperature"
-#define TOPIC_STATE_HUMIDITY1 "esp32/sensor/dht11/humidity"
-#define TOPIC_STATE_TEMPERATURE2 "esp32/sensor/aht20/temperature"
-#define TOPIC_STATE_HUMIDITY2 "esp32/sensor/aht20/humidity"
-#define TOPIC_STATE_PRESSURE "esp32/sensor/pressure"
-#define TOPIC_STATE_DUST "esp32/sensor/dust"
-#define TOPIC_STATE_AIR_QUALITY "esp32/sensor/air_quality"
-
-// EEPROM Configuration
 #define EEPROM_SIZE 512
 #define SSID_ADDR 0
 #define PASS_ADDR 32
 #define MQTT_IP_ADDR 64
 
-// MQ135 Configuration
-#define BOARD "ESP-32"
-#define VOLTAGE_RESOLUTION 3.3
-#define ADC_BIT_RESOLUTION 12
+// MQ135 settings
+#define Board "ESP-32"
+#define Type "MQ-135"
+#define Voltage_Resolution 3.3
+#define ADC_Bit_Resolution 12
 #define RatioMQ135CleanAir 3.6
+#define R0 10
+#define MQ135_PIN 34
 
-// Device initialization
-DHT dht(DHT_PIN, DHTTYPE);
+// MQ135 Calibration data
+#define CALIBRATION_SAMPLES 50
+#define CALIBRATION_SAMPLE_INTERVAL 500
+#define MQ135_A 102.2
+#define MQ135_B -2.473
+
+DHT dht(DHTPIN, DHTTYPE);
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
-WebServer server(80);
-Adafruit_AHTX0 aht;
+AsyncWebServer server(80);
 Adafruit_BMP280 bmp;
-MQUnifiedsensor MQ135(BOARD, VOLTAGE_RESOLUTION, ADC_BIT_RESOLUTION, MQ135_PIN_A0, "MQ-135");
+Adafruit_AHTX0 aht;
+MQUnifiedsensor mq135(Board, Voltage_Resolution, ADC_Bit_Resolution, MQ135_PIN, Type);
 
-// WiFi and MQTT Configuration
-char ssid[32] = "vanhoa";
-char password[32] = "11111111";
-char mqtt_server[32] = "192.168.4.2";
-const int mqtt_port = 1883;
-WiFiClient espClient;
-PubSubClient client(espClient);
+#define samplingTime  280
+#define deltaTime     40
+#define sleepTime     9680
 
-// Sensor Variables
-float dht_temperature = 0, dht_humidity = 0;
-float aht_temperature = 0, aht_humidity = 0;
+float voMeasured = 0;
+float calcVoltage = 0;
+float dustDensity = 0;
+int AQI = 0;
+float temperature = 0, humidity = 0;
+
+// Sensor variables
+float co2ppm = 0;
 float pressure = 0;
-float dust_density = 0;
-float air_quality = 0;
+float altitude = 0;
+float aht20Temperature = 0;
+float aht20Humidity = 0;
+float bmp280Temperature = 0;
 
-// Averaging variables
-float tempSumDHT = 0, humiSumDHT = 0;
-float tempSumAHT = 0, humiSumAHT = 0;
-float pressureSum = 0;
-float dustSum = 0;
-float airQualitySum = 0;
+float dustDensitySum = 0, tempSum = 0, humSum = 0;
+float co2Sum = 0, pressureSum = 0, altitudeSum = 0;
 int count = 0;
 int countTime = 0;
 
-float avgDHTTemp = 0, avgDHTHumi = 0;
-float avgAHTTemp = 0, avgAHTHumi = 0;
-float avgPressure = 0;
-float avgDust = 0;
-float avgAirQuality = 0;
-
-// State variables
-bool updateDisplay = false;
-bool publishSensorFlag = false;
-bool isAPMode = false;
-bool bmpInitialized = false;
-bool ahtInitialized = false;
-bool oledInitialized = false;
-
-// Task Handles
 TaskHandle_t TaskReadHandle;
 TaskHandle_t TaskPrintHandle;
 TaskHandle_t TaskDisplayHandle;
+TaskHandle_t TaskControlHandle;
 TaskHandle_t TaskMQTTHandle;
+TaskHandle_t TaskMQTTSubscribeHandle;
+TaskHandle_t TaskResetHandle;
 
-// Function declarations
-void loadCredentials();
-void saveCredentials();
-bool setup_wifi();
-void handleRoot();
-void handleConfig();
-void startAPMode();
+portMUX_TYPE mux = portMUX_INITIALIZER_UNLOCKED;
+portMUX_TYPE dataMux = portMUX_INITIALIZER_UNLOCKED;
+SemaphoreHandle_t mqttMutex;
 
-// Function to read dust sensor
-float readDustSensor() {
-    float voMeasured = 0;
-    float calcVoltage = 0;
-    float dustDensity = 0;
-    
-    // Đọc điện áp nền (khi LED tắt)
-    digitalWrite(DUST_LED_PIN, HIGH);
-    delayMicroseconds(sleepTime);
-    float baseVoltage = analogRead(DUST_MEASURE_PIN);
-    
-    // Đọc giá trị khi LED sáng
-    digitalWrite(DUST_LED_PIN, LOW);
-    delayMicroseconds(samplingTime);
-    voMeasured = analogRead(DUST_MEASURE_PIN);
-    delayMicroseconds(deltaTime);
-    digitalWrite(DUST_LED_PIN, HIGH);
-    
-    // Tính điện áp thực từ giá trị ADC (ESP32 ADC 12-bit)
-    calcVoltage = (voMeasured - baseVoltage) * (3.3 / 4095.0);
-    
-    // Công thức chuyển đổi điện áp sang mật độ bụi (đã hiệu chỉnh cho ESP32)
-    // Hệ số 0.17 được điều chỉnh thành 0.2 để phù hợp với điện áp thực tế
-    if (calcVoltage > 0) {
-        dustDensity = 0.2 * calcVoltage * 1000.0; // Chuyển đổi sang μg/m3
-    } else {
-        dustDensity = 0;
+float avgDustDensity = 0;
+int avgAQI = 0;
+float avgTemperature = 0;
+float avgHumidity = 0;
+float avgCO2 = 0;
+float avgPressure = 0;
+float avgAltitude = 0;
+
+bool updateDisplay = false;
+bool dataUpdated = false;
+bool publishSensorFlag = false;
+bool isAPMode = false;
+
+char ssid[32] = "vanhoa";
+char password[32] = "11111111";
+char mqtt_server[32] = "your_mqtt_server";
+const int mqtt_port = 1883;
+const char* mqtt_client_id = "ESP32_Client1";
+
+char msg[50];
+
+int failedReconnectAttempts = 0;
+const int MAX_RECONNECT_ATTEMPTS = 10;
+const unsigned long RESET_TIMEOUT = 120000;
+
+WiFiClient espClient;
+PubSubClient client(espClient);
+
+struct AQILevel {
+  float Clow, Chigh;
+  int Ilow, Ihigh;
+};
+
+AQILevel aqiTable[] = {
+  {0.0, 12.0, 0, 50},
+  {12.1, 35.4, 51, 100},
+  {35.5, 55.4, 101, 150},
+  {55.5, 150.4, 151, 200},
+  {150.5, 250.4, 201, 300},
+  {250.5, 500.4, 301, 500}
+};
+
+int calculateAQI(float pm25) {
+  if (pm25 <= 0) return 0;
+  if (pm25 > 500) return 500;
+
+  for (int i = 0; i < 6; i++) {
+    if (pm25 >= aqiTable[i].Clow && pm25 <= aqiTable[i].Chigh) {
+      return ((aqiTable[i].Ihigh - aqiTable[i].Ilow) / (aqiTable[i].Chigh - aqiTable[i].Clow)) *
+             (pm25 - aqiTable[i].Clow) + aqiTable[i].Ilow;
     }
-    
-    // Giới hạn giá trị hợp lý
-    if (dustDensity < 0) {
-        dustDensity = 0;
-    } else if (dustDensity > 500) {  // Giới hạn trên thông thường của cảm biến
-        dustDensity = 500;
-    }
-    
-    return dustDensity;
+  }
+  return -1;
+}
+
+void loadCredentials() {
+  EEPROM.begin(EEPROM_SIZE);
+  EEPROM.get(SSID_ADDR, ssid);
+  EEPROM.get(PASS_ADDR, password);
+  EEPROM.get(MQTT_IP_ADDR, mqtt_server);
+  EEPROM.end();
+}
+
+String getConfigPage() {
+  String html = "<!DOCTYPE html><html><body><h1>ESP32 Config node1</h1>";
+  html += "<form method='POST' action='/save'>";
+  html += "WiFi SSID: <input type='text' name='ssid' value='" + String(ssid) + "'><br><br>";
+  html += "Password: <input type='password' name='pass' value='" + String(password) + "'><br><br>";
+  html += "MQTT Server: <input type='text' name='mqtt' value='" + String(mqtt_server) + "'><br><br>";
+  html += "<input type='submit' value='Save and Restart'>";
+  html += "</form></body></html>";
+  return html;
+}
+
+void saveCredentials(const char* newSsid, const char* newPass, const char* newMqtt) {
+  char tempSsid[32];
+  char tempPass[32];
+  char tempMqtt[32];
+
+  strncpy(tempSsid, newSsid, 32);
+  strncpy(tempPass, newPass, 32);
+  strncpy(tempMqtt, newMqtt, 32);
+
+  tempSsid[31] = '\0';
+  tempPass[31] = '\0';
+  tempMqtt[31] = '\0';
+
+  if (strcmp(newSsid, ssid) != 0 || strcmp(newPass, password) != 0 || strcmp(newMqtt, mqtt_server) != 0) {
+    EEPROM.begin(EEPROM_SIZE);
+    EEPROM.put(SSID_ADDR, tempSsid);
+    EEPROM.put(PASS_ADDR, tempPass);
+    EEPROM.put(MQTT_IP_ADDR, tempMqtt);
+    EEPROM.commit();
+    EEPROM.end();
+  }
+
+  strncpy(ssid, tempSsid, 32);
+  strncpy(password, tempPass, 32);
+  strncpy(mqtt_server, tempMqtt, 32);
 }
 
 void TaskReadSensor(void *pvParameters) {
-    sensors_event_t humidity, temp;
+  if (!bmp.begin(BMP280_ADDRESS)) {
+    Serial.println("Could not find a valid BMP280 sensor!");
+  } else {
+    bmp.setSampling(Adafruit_BMP280::MODE_NORMAL,
+                    Adafruit_BMP280::SAMPLING_X2,
+                    Adafruit_BMP280::SAMPLING_X16,
+                    Adafruit_BMP280::FILTER_X16,
+                    Adafruit_BMP280::STANDBY_MS_500);
+  }
+
+  if (!aht.begin()) {
+    Serial.println("Could not find AHT20 sensor!");
+  }
+
+  mq135.setRegressionMethod(1);
+  mq135.init();
+  Serial.print("Calibrating MQ135. Please wait.");
+  float calcR0 = 0;
+  for(int i = 1; i <= CALIBRATION_SAMPLES; i++) {
+    mq135.update();
+    calcR0 += mq135.calibrate(RatioMQ135CleanAir);
+    if (i % 10 == 0) Serial.print(".");
+    delay(CALIBRATION_SAMPLE_INTERVAL);
+  }
+  mq135.setR0(calcR0/CALIBRATION_SAMPLES);
+  mq135.setA(MQ135_A);
+  mq135.setB(MQ135_B);
+  Serial.println(" Done!");
+
+  while (1) {
+    taskENTER_CRITICAL(&mux);
+    digitalWrite(ledPower, LOW);
+    delayMicroseconds(samplingTime);
     
-    for(;;) {
-        // Read DHT11
-        float t1 = dht.readTemperature();
-        float h1 = dht.readHumidity();
-        if (!isnan(t1) && !isnan(h1)) {
-            dht_temperature = t1;
-            dht_humidity = h1;
-            tempSumDHT += t1;
-            humiSumDHT += h1;
-        }
-        
-        // Read AHT20
-        if (aht.getEvent(&humidity, &temp)) {
-            aht_temperature = temp.temperature;
-            aht_humidity = humidity.relative_humidity;
-            tempSumAHT += aht_temperature;
-            humiSumAHT += aht_humidity;
-        }
+    voMeasured = analogRead(measurePin);
+    delayMicroseconds(deltaTime);
+    
+    digitalWrite(ledPower, HIGH);
+    taskEXIT_CRITICAL(&mux);
+    
+    delayMicroseconds(sleepTime);
 
-        // Read BMP280
-        float p = bmp.readPressure();
-        if (p > 0 && p < 200000) {  // Valid pressure range is roughly 30000-110000 Pa
-            p = p / 100.0; // Convert Pa to hPa
-            pressure = p;
-            pressureSum += p;
-        } else {
-            Serial.println("Invalid BMP280 pressure reading");
-        }
+    calcVoltage = voMeasured * (3.3 / 4095.0);
+    dustDensity = (170 * calcVoltage - 0.1);
 
-        // Read MQ135
-        MQ135.update();
-        float aq = MQ135.readSensor();
-        bool threshold_triggered = digitalRead(MQ135_PIN_D0);  // Read digital threshold pin
-        
-        if (!isnan(aq)) {
-            air_quality = aq;
-            airQualitySum += aq;
-            if (threshold_triggered) {
-                Serial.println("MQ135 threshold exceeded!");
-            }
-        }
+    if (dustDensity < 0) dustDensity = 0;
+    AQI = calculateAQI(dustDensity);
 
-        // Read GP2Y1014AU0F
-        float dust = readDustSensor();
-        dustSum += dust;
-        dust_density = dust;
+    temperature = dht.readTemperature();
+    humidity = dht.readHumidity();
 
-        count++;
-        countTime++;
-
-        Serial.println("\n=== Current Readings ===");
-        Serial.printf("DHT11  - T: %.1f°C, H: %.1f%%\n", dht_temperature, dht_humidity);
-        Serial.printf("AHT20  - T: %.1f°C, H: %.1f%%\n", aht_temperature, aht_humidity);
-        Serial.printf("BMP280 - P: %.1f hPa\n", pressure);
-        Serial.printf("MQ135  - AQ: %.1f ppm\n", air_quality);
-        Serial.printf("Dust   - %.2f mg/m³\n", dust_density);
-
-        vTaskDelay(pdMS_TO_TICKS(2000));
+    sensors_event_t humidity_event, temp_event;
+    if (aht.getEvent(&humidity_event, &temp_event)) {
+      aht20Temperature = temp_event.temperature;
+      aht20Humidity = humidity_event.relative_humidity;
     }
+
+    bmp280Temperature = bmp.readTemperature();
+    pressure = bmp.readPressure() / 100.0F;
+    altitude = bmp.readAltitude(1013.25);
+
+    mq135.update();
+    co2ppm = mq135.readSensor();
+    
+    temperature = (temperature + aht20Temperature + bmp280Temperature) / 3.0;
+    humidity = (humidity + aht20Humidity) / 2.0;
+
+    if (dustDensity > 0 && !isnan(temperature) && !isnan(humidity) && !isnan(co2ppm) && !isnan(pressure)) {
+      dustDensitySum += dustDensity;
+      tempSum += temperature;
+      humSum += humidity;
+      co2Sum += co2ppm;
+      pressureSum += pressure;
+      altitudeSum += altitude;
+      count++;
+    }
+    countTime++;
+
+    Serial.println("=== Sensor Readings ===");
+    Serial.printf("Dust: %.2f µg/m³ | AQI: %d\n", dustDensity, AQI);
+    Serial.printf("Temp: %.2f°C\n", temperature);
+    Serial.printf("Hum: %.2f%%\n", humidity);
+    Serial.printf("CO2: %.2f ppm\n", co2ppm);
+    Serial.printf("Pre: %.2f hPa\n", pressure);
+    Serial.printf("Alt: %.2f m\n", altitude);
+    Serial.println("====================");
+
+    vTaskDelay(pdMS_TO_TICKS(2000));
+  }
 }
 
 void TaskPrintData(void *pvParameters) {
-    for(;;) {
-        if (countTime >= 15) {  // Average over 30 seconds
-            if (count > 0) {
-                avgDHTTemp = tempSumDHT / count;
-                avgDHTHumi = humiSumDHT / count;
-                avgAHTTemp = tempSumAHT / count;
-                avgAHTHumi = humiSumAHT / count;
-                avgPressure = pressureSum / count;
-                avgDust = dustSum / count;
-                avgAirQuality = airQualitySum / count;
+  while (1) {
+    if (countTime >= 150) {
+      if (count > 0) {
+        taskENTER_CRITICAL(&dataMux);
+        avgDustDensity = dustDensitySum / count;
+        avgTemperature = tempSum / count;
+        avgHumidity = humSum / count;
+        avgAQI = calculateAQI(avgDustDensity);
+        avgCO2 = co2Sum / count;
+        avgPressure = pressureSum / count;
+        avgAltitude = altitudeSum / count;
+        taskEXIT_CRITICAL(&dataMux);
 
-                Serial.println("\n=== 30-Second Averages ===");
-                Serial.printf("DHT11 - T: %.1f°C, H: %.1f%%\n", avgDHTTemp, avgDHTHumi);
-                Serial.printf("AHT20 - T: %.1f°C, H: %.1f%%\n", avgAHTTemp, avgAHTHumi);
-                Serial.printf("Pressure: %.1f hPa\n", avgPressure);
-                Serial.printf("Air Quality: %.1f ppm\n", avgAirQuality);
-                Serial.printf("Dust: %.2f mg/m³\n", avgDust);
+        Serial.println("====== 30s Average ======");
+        Serial.printf("Dust: %.2f µg/m³ | AQI: %d\n", avgDustDensity, avgAQI);
+        Serial.printf("Temp: %.2f°C\n", avgTemperature);
+        Serial.printf("Hum: %.2f%%\n", avgHumidity);
+        Serial.printf("CO2: %.2f ppm\n", avgCO2);
+        Serial.printf("Pre: %.2f hPa\n", avgPressure);
+        Serial.printf("Alt: %.2f m\n", avgAltitude);
+        Serial.println("=======================");
 
-                updateDisplay = true;
-                publishSensorFlag = true;
+        taskENTER_CRITICAL(&dataMux);
+        updateDisplay = true;
+        dataUpdated = true;
+        publishSensorFlag = true;
+        taskEXIT_CRITICAL(&dataMux);
 
-                // Reset accumulators
-                tempSumDHT = humiSumDHT = 0;
-                tempSumAHT = humiSumAHT = 0;
-                pressureSum = dustSum = airQualitySum = 0;
-                count = countTime = 0;
-            }
-        }
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        dustDensitySum = 0;
+        tempSum = 0;
+        humSum = 0;
+        co2Sum = 0;
+        pressureSum = 0;
+        altitudeSum = 0;
+        count = 0;
+        countTime = 0;
+      }
     }
+    vTaskDelay(pdMS_TO_TICKS(1500));
+  }
 }
 
 void TaskDisplay(void *pvParameters) {
-    for(;;) {
-        if (updateDisplay) {
-            display.clearDisplay();
+  while (1) {
+    static unsigned long lastRefresh = 0;
+    bool localUpdateDisplay;
 
-            // Draw rectangles
-            display.drawRect(0, 22, 127, 20, 1);
-            display.drawRect(0, 1, 127, 19, 1);
+    taskENTER_CRITICAL(&dataMux);
+    localUpdateDisplay = updateDisplay;
+    taskEXIT_CRITICAL(&dataMux);
 
-            // Draw vertical line
-            display.drawLine(62, 2, 62, 40, 1);
-
-            // Configure text settings
-            display.setTextColor(1);
-            display.setTextWrap(false);
-
-            // Draw text in each section
-            char buf[20];
-            
-            // Top row - DHT11 and AHT20 labels
-            display.setCursor(4, 7);
-            display.print("DHT11");
-            display.setCursor(66, 7);
-            display.print("AHT20");
-
-            // Middle row - Temperature values
-            snprintf(buf, sizeof(buf), "%.1fC", avgDHTTemp);
-            display.setCursor(4, 28);
-            display.print(buf);
-
-            snprintf(buf, sizeof(buf), "%.1fC", avgAHTTemp);
-            display.setCursor(66, 28);
-            display.print(buf);
-
-            // Bottom row - Pressure
-            snprintf(buf, sizeof(buf), "%.1f hPa", avgPressure);
-            display.setCursor(3, 49);
-            display.print(buf);
-
-            display.display();
-            updateDisplay = false;
-        }
-        vTaskDelay(pdMS_TO_TICKS(100));
+    if (millis() - lastRefresh > 60000) {
+      localUpdateDisplay = true;
+      lastRefresh = millis();
     }
-}
 
-void publishSensorData() {
-    if (!client.connected()) return;
+    if (!isAPMode && localUpdateDisplay) {
+      float localDustDensity, localTemperature, localHumidity, localCO2, localPressure;
+      int localAQI;
 
-    char msg[10];
-    
-    snprintf(msg, 10, "%.1f", avgDHTTemp);
-    client.publish(TOPIC_STATE_TEMPERATURE1, msg);
-    
-    snprintf(msg, 10, "%.1f", avgDHTHumi);
-    client.publish(TOPIC_STATE_HUMIDITY1, msg);
-    
-    snprintf(msg, 10, "%.1f", avgAHTTemp);
-    client.publish(TOPIC_STATE_TEMPERATURE2, msg);
-    
-    snprintf(msg, 10, "%.1f", avgAHTHumi);
-    client.publish(TOPIC_STATE_HUMIDITY2, msg);
-    
-    snprintf(msg, 10, "%.1f", avgPressure);
-    client.publish(TOPIC_STATE_PRESSURE, msg);
-    
-    snprintf(msg, 10, "%.2f", avgDust);
-    client.publish(TOPIC_STATE_DUST, msg);
-    
-    snprintf(msg, 10, "%.1f", avgAirQuality);
-    client.publish(TOPIC_STATE_AIR_QUALITY, msg);
-}
+      taskENTER_CRITICAL(&dataMux);
+      localDustDensity = avgDustDensity;
+      localAQI = avgAQI;
+      localTemperature = avgTemperature;
+      localHumidity = avgHumidity;
+      localCO2 = avgCO2;
+      localPressure = avgPressure;
+      updateDisplay = false;
+      taskEXIT_CRITICAL(&dataMux);
 
-void TaskMQTT(void *pvParameters) {
-    for(;;) {
-        if (!isAPMode && publishSensorFlag) {
-            publishSensorData();
-            publishSensorFlag = false;
-        }
-        vTaskDelay(pdMS_TO_TICKS(100));
+      display.clearDisplay();
+      display.setTextSize(1);
+      display.setTextColor(SSD1306_WHITE);
+      display.setCursor(0, 0);
+
+      display.print("PM2.5: "); display.print(localDustDensity, 1); display.println(" ug/m3");
+      display.print("AQI: "); display.println(localAQI);
+      display.print("Temp: "); display.print(localTemperature, 1); display.println(" C");
+      display.print("Hum: "); display.print(localHumidity, 1); display.println(" %");
+      display.print("CO2: "); display.print(localCO2, 0); display.println(" ppm");
+      display.print("Pre: "); display.print(localPressure, 0); display.println(" hPa");
+
+      display.display();
     }
-}
-
-// WiFi and configuration functions
-void loadCredentials() {
-    EEPROM.begin(EEPROM_SIZE);
-    EEPROM.get(SSID_ADDR, ssid);
-    EEPROM.get(PASS_ADDR, password);
-    EEPROM.get(MQTT_IP_ADDR, mqtt_server);
-    EEPROM.end();
-}
-
-void saveCredentials() {
-    EEPROM.begin(EEPROM_SIZE);
-    EEPROM.put(SSID_ADDR, ssid);
-    EEPROM.put(PASS_ADDR, password);
-    EEPROM.put(MQTT_IP_ADDR, mqtt_server);
-    EEPROM.commit();
-    EEPROM.end();
+    vTaskDelay(pdMS_TO_TICKS(1000));
+  }
 }
 
 bool setup_wifi() {
-    WiFi.mode(WIFI_STA);
-    WiFi.begin(ssid, password);
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
 
-    int attempts = 0;
-    while (WiFi.status() != WL_CONNECTED && attempts < 20) {
-        delay(500);
-        Serial.print(".");
-        attempts++;
-    }
+  int attempts = 0;
+  static unsigned long lastAttempt = 0;
+  unsigned long currentMillis = millis();
 
-    if (WiFi.status() == WL_CONNECTED) {
-        Serial.print("\nConnected to WiFi. IP: ");
-        Serial.println(WiFi.localIP());
-        return true;
-    }
+  if (currentMillis - lastAttempt < (failedReconnectAttempts * 1000)) {
     return false;
-}
+  }
 
-void handleRoot() {
-    String html = "<html><body>";
-    html += "<h1>ESP32 Environmental Monitor Setup</h1>";
-    html += "<form method='post' action='/config'>";
-    html += "SSID: <input type='text' name='ssid'><br>";
-    html += "Password: <input type='password' name='pwd'><br>";
-    html += "MQTT Server: <input type='text' name='mqtt'><br>";
-    html += "<input type='submit' value='Save'>";
-    html += "</form></body></html>";
-    server.send(200, "text/html", html);
-}
+  lastAttempt = currentMillis;
 
-void handleConfig() {
-    String newSsid = server.arg("ssid");
-    String newPass = server.arg("pwd");
-    String newMqtt = server.arg("mqtt");
-    
-    if (newSsid.length() > 0 && newPass.length() > 0 && newMqtt.length() > 0) {
-        strncpy(ssid, newSsid.c_str(), 31);
-        strncpy(password, newPass.c_str(), 31);
-        strncpy(mqtt_server, newMqtt.c_str(), 31);
-        saveCredentials();
-        server.send(200, "text/plain", "Settings saved. Restarting...");
-        delay(2000);
-        ESP.restart();
-    } else {
-        server.send(400, "text/plain", "Invalid input!");
-    }
+  while (WiFi.status() != WL_CONNECTED && attempts < 20) {
+    vTaskDelay(pdMS_TO_TICKS(500));
+    Serial.print(".");
+    attempts++;
+  }
+
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("\nWiFi connected");
+    Serial.println(WiFi.localIP());
+    failedReconnectAttempts = 0;
+    return true;
+  }
+  Serial.println("\nWiFi connection failed");
+  failedReconnectAttempts++;
+  return false;
 }
 
 void startAPMode() {
-    isAPMode = true;
-    WiFi.mode(WIFI_AP);
-    WiFi.softAP("ESP32_EnvMonitor", "12345678");
+  isAPMode = true;
+
+  WiFi.mode(WIFI_AP);
+  WiFi.softAP("ESP32_Config1", "12345678");
+  Serial.println("AP Mode started");
+  Serial.print("AP IP address: ");
+  Serial.println(WiFi.softAPIP());
+
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0, 0);
+  display.println("AP Mode Active");
+  display.println("Connect to:");
+  display.println("SSID: ESP32_Config1");
+  display.println("Pass: 12345678");
+  display.println("IP: 192.168.4.1");
+  display.display();
+
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(200, "text/html", getConfigPage());
+  });
+
+  server.on("/save", HTTP_POST, [](AsyncWebServerRequest *request){
+    if (request->hasArg("ssid") && request->hasArg("pass") && request->hasArg("mqtt")) {
+      String newSsid = request->arg("ssid");
+      String newPass = request->arg("pass");
+      String newMqtt = request->arg("mqtt");
+      
+      saveCredentials(newSsid.c_str(), newPass.c_str(), newMqtt.c_str());
+      request->send(200, "text/html", "<html><body><h1>Saved! Restarting...</h1></body></html>");
+      vTaskDelay(pdMS_TO_TICKS(1000));
+      ESP.restart();
+    } else {
+      request->send(400, "text/html", "<html><body><h1>Invalid input</h1></body></html>");
+    }
+  });
+
+  server.begin();
+
+  vTaskSuspend(TaskReadHandle);
+  vTaskSuspend(TaskPrintHandle);
+  vTaskSuspend(TaskDisplayHandle);
+  vTaskSuspend(TaskControlHandle);
+  vTaskSuspend(TaskMQTTHandle);
+  vTaskSuspend(TaskMQTTSubscribeHandle);
+}
+
+void safeRestart() {
+  // Clean up and prepare for restart
+  WiFi.disconnect(true);
+  WiFi.mode(WIFI_OFF);
+  btStop();
+  
+  // Suspend all tasks
+  vTaskSuspend(TaskReadHandle);
+  vTaskSuspend(TaskPrintHandle);
+  vTaskSuspend(TaskDisplayHandle);
+  vTaskSuspend(TaskControlHandle);
+  vTaskSuspend(TaskMQTTHandle);
+  vTaskSuspend(TaskMQTTSubscribeHandle);
+  
+  // Wait for operations to complete
+  vTaskDelay(pdMS_TO_TICKS(1000));
+  
+  // Clear display
+  display.clearDisplay();
+  display.display();
+  
+  Serial.println("Performing safe restart...");
+  Serial.flush();
+  
+  // Final delay before restart
+  vTaskDelay(pdMS_TO_TICKS(100));
+  
+  esp_restart();
+}
+
+void TaskResetTimeout(void *pvParameters) {
+  unsigned long lastRebootTime = millis();
+  const unsigned long REBOOT_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours
+  const unsigned long CHECK_INTERVAL = 60000; // Check every minute
+
+  while (1) {
+    unsigned long currentTime = millis();
     
-    Serial.print("AP IP address: ");
-    Serial.println(WiFi.softAPIP());
-    
-    server.on("/", handleRoot);
-    server.on("/config", HTTP_POST, handleConfig);
-    server.begin();
-    
-    display.clearDisplay();
-    display.setTextColor(1);
-    display.setTextSize(1);
-    display.setCursor(0, 0);
-    display.println("AP Mode Active");
-    display.println("SSID: ESP32_EnvMonitor");
-    display.println("Pass: 12345678");
-    display.println(WiFi.softAPIP().toString());
-    display.display();
+    // Force reboot every 24 hours
+    if (currentTime - lastRebootTime >= REBOOT_INTERVAL) {
+      Serial.println("Scheduled reboot initiated...");
+      safeRestart();
+    }
+
+    // Check connections every minute
+    if (isAPMode || WiFi.status() != WL_CONNECTED || !client.connected()) {
+      Serial.println("Connection issue detected, resetting ESP32...");
+      safeRestart();
+    }
+
+    vTaskDelay(pdMS_TO_TICKS(CHECK_INTERVAL));
+  }
+}
+
+void TaskControl(void *pvParameters) {
+  while (1) {
+    vTaskDelay(pdMS_TO_TICKS(100));
+  }
+}
+
+void publishMQTTSensor() {
+  if (xSemaphoreTake(mqttMutex, pdMS_TO_TICKS(1000)) == pdTRUE) {
+    if (!client.connected()) {
+      if (!reconnect()) {
+        xSemaphoreGive(mqttMutex);
+        return;
+      }
+    }
+    client.loop();
+
+    snprintf(msg, 50, "%.1f", avgDustDensity);
+    client.publish(TOPIC_STATE_DUST, msg);
+    snprintf(msg, 50, "%d", avgAQI);
+    client.publish(TOPIC_STATE_AQI, msg);
+    snprintf(msg, 50, "%.1f", avgTemperature);
+    client.publish(TOPIC_STATE_TEMPERATURE, msg);
+    snprintf(msg, 50, "%.1f", avgHumidity);
+    client.publish(TOPIC_STATE_HUMIDITY, msg);
+    snprintf(msg, 50, "%.1f", avgCO2);
+    client.publish(TOPIC_STATE_CO2, msg);
+    snprintf(msg, 50, "%.1f", avgPressure);
+    client.publish(TOPIC_STATE_PRESSURE, msg);
+    snprintf(msg, 50, "%.1f", avgAltitude);
+    client.publish(TOPIC_STATE_ALT, msg);
+
+    Serial.println("MQTT sensor data published");
+    xSemaphoreGive(mqttMutex);
+  }
+}
+
+void TaskMQTT(void *pvParameters) {
+  while (1) {
+    if (!isAPMode && publishSensorFlag) {
+      publishMQTTSensor();
+      publishSensorFlag = false;
+    }
+    vTaskDelay(pdMS_TO_TICKS(100));
+  }
+}
+
+void mqtt_callback(char* topic, byte* payload, unsigned int length) {
+  // Empty callback as we don't need to handle incoming messages
+}
+
+bool reconnect() {
+  int attempts = 0;
+  while (!client.connected() && attempts < 3) {
+    Serial.print("Attempting MQTT connection...");
+    if (client.connect(mqtt_client_id)) {
+      Serial.println("connected");
+      return true;
+    } else {
+      Serial.print("failed, rc=");
+      Serial.print(client.state());
+      Serial.println(" try again in 5 seconds");
+      attempts++;
+      vTaskDelay(pdMS_TO_TICKS(5000));
+    }
+  }
+  return false;
+}
+
+void TaskMQTTSubscribe(void *pvParameters) {
+  while (1) {
+    if (!isAPMode && client.connected()) {
+      client.loop();
+    }
+    vTaskDelay(pdMS_TO_TICKS(100));
+  }
 }
 
 void setup() {
-    Serial.begin(115200);
-    Wire.begin();
+  Serial.begin(115200);
+  Wire.begin();
+  
+  pinMode(ledPower, OUTPUT);
+  pinMode(MQ135_PIN, INPUT);
+  
+  dht.begin();
+  mqttMutex = xSemaphoreCreateMutex();
 
-    // Initialize dust sensor
-    pinMode(DUST_LED_PIN, OUTPUT);
-    digitalWrite(DUST_LED_PIN, HIGH);
+  if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
+    Serial.println(F("SSD1306 allocation failed"));
+    for(;;);
+  }
 
-    // Initialize MQ135
-    pinMode(MQ135_PIN_D0, INPUT);  // Digital pin for threshold detection
-    MQ135.init();
-    MQ135.setRegressionMethod(1);
-    MQ135.setA(110.47);
-    MQ135.setB(-2.862);
-    float calcR0 = 0;
-    for(int i = 1; i <= 10; i++) {
-        MQ135.update();
-        calcR0 += MQ135.calibrate(RatioMQ135CleanAir);
-        delay(100);
-    }
-    MQ135.setR0(calcR0/10);
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0, 0);
+  display.println("Starting...");
+  display.display();
+  vTaskDelay(pdMS_TO_TICKS(2000));
 
-    // Initialize DHT11
-    dht.begin();
-    
-    // Initialize AHT20
-    if (!aht.begin()) {
-        Serial.println("Could not find AHT20");
-    }
+  loadCredentials();
 
-    // Initialize BMP280
-    int attempts = 0;
-    while (!bmp.begin(0x77) && attempts < 3) {
-        Serial.println("Could not find BMP280! Retrying...");
-        attempts++;
-        vTaskDelay(pdMS_TO_TICKS(1000));
-    }
-    bmpInitialized = bmp.begin(0x77);
-    
-    if (bmpInitialized) {
-        Serial.println("BMP280 init success!");
-        bmp.setSampling(Adafruit_BMP280::MODE_NORMAL,
-                       Adafruit_BMP280::SAMPLING_X2,
-                       Adafruit_BMP280::SAMPLING_X16,
-                       Adafruit_BMP280::FILTER_X16,
-                       Adafruit_BMP280::STANDBY_MS_500);
-        vTaskDelay(pdMS_TO_TICKS(100));
-    } else {
-        Serial.println("BMP280 init failed!");
-    }
+  xTaskCreatePinnedToCore(TaskResetTimeout, "TaskReset", 2048, NULL, 2, NULL, 1);
 
-    // Initialize OLED
-    if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
-        Serial.println(F("SSD1306 allocation failed"));
-        for(;;);
-    }
-    display.clearDisplay();
-    display.setTextSize(1);
-    display.setTextColor(1);
-    display.setCursor(0,0);
-    display.println("Initializing...");
-    display.display();
-
-    // Load credentials and setup WiFi
-    loadCredentials();
-    if (!setup_wifi()) {
+  bool connectionSuccess = false;
+  while (!connectionSuccess) {
+    if (setup_wifi()) {
+      client.setServer(mqtt_server, mqtt_port);
+      client.setCallback(mqtt_callback);
+      if (reconnect()) {
+        connectionSuccess = true;
+      } else {
+        Serial.println("MQTT connection failed, starting AP mode");
+        WiFi.disconnect();
         startAPMode();
+      }
     } else {
-        client.setServer(mqtt_server, mqtt_port);
+      Serial.println("WiFi connection failed, starting AP mode");
+      startAPMode();
     }
+  }
 
-    // Create tasks
-    xTaskCreatePinnedToCore(TaskReadSensor, "ReadSensor", 4096, NULL, 3, &TaskReadHandle, 1);
-    xTaskCreatePinnedToCore(TaskPrintData, "PrintData", 4096, NULL, 1, &TaskPrintHandle, 1);
-    xTaskCreatePinnedToCore(TaskDisplay, "Display", 4096, NULL, 1, &TaskDisplayHandle, 0);
-    xTaskCreatePinnedToCore(TaskMQTT, "MQTT", 4096, NULL, 1, &TaskMQTTHandle, 1);
+  xTaskCreatePinnedToCore(TaskReadSensor, "TaskRead", 4096, NULL, 3, &TaskReadHandle, 1);
+  xTaskCreatePinnedToCore(TaskPrintData, "TaskPrint", 4096, NULL, 1, &TaskPrintHandle, 1);
+  xTaskCreatePinnedToCore(TaskDisplay, "TaskDisplay", 4096, NULL, 1, &TaskDisplayHandle, 0);
+  xTaskCreatePinnedToCore(TaskControl, "TaskControl", 4096, NULL, 1, &TaskControlHandle, 1);
+  xTaskCreatePinnedToCore(TaskMQTT, "TaskMQTT", 8192, NULL, 3, &TaskMQTTHandle, 1);
+  xTaskCreatePinnedToCore(TaskMQTTSubscribe, "TaskMQTTSubscribe", 8192, NULL, 2, &TaskMQTTSubscribeHandle, 1);
 }
 
 void loop() {
-    if (isAPMode) {
-        server.handleClient();
-    }
-    vTaskDelay(pdMS_TO_TICKS(10));
+  // Empty as we're using FreeRTOS tasks
 }
