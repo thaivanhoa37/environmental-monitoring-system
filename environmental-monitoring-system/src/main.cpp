@@ -117,19 +117,37 @@ float readDustSensor() {
     float calcVoltage = 0;
     float dustDensity = 0;
     
-    digitalWrite(DUST_LED_PIN, LOW);
-    delayMicroseconds(samplingTime);
-    
-    voMeasured = analogRead(DUST_MEASURE_PIN);
-    delayMicroseconds(deltaTime);
-    
+    // Đọc điện áp nền (khi LED tắt)
     digitalWrite(DUST_LED_PIN, HIGH);
     delayMicroseconds(sleepTime);
-
-    calcVoltage = voMeasured * (3.3 / 4095.0);
-    dustDensity = 0.17 * calcVoltage - 0.1;
+    float baseVoltage = analogRead(DUST_MEASURE_PIN);
     
-    return dustDensity < 0 ? 0 : dustDensity;
+    // Đọc giá trị khi LED sáng
+    digitalWrite(DUST_LED_PIN, LOW);
+    delayMicroseconds(samplingTime);
+    voMeasured = analogRead(DUST_MEASURE_PIN);
+    delayMicroseconds(deltaTime);
+    digitalWrite(DUST_LED_PIN, HIGH);
+    
+    // Tính điện áp thực từ giá trị ADC (ESP32 ADC 12-bit)
+    calcVoltage = (voMeasured - baseVoltage) * (3.3 / 4095.0);
+    
+    // Công thức chuyển đổi điện áp sang mật độ bụi (đã hiệu chỉnh cho ESP32)
+    // Hệ số 0.17 được điều chỉnh thành 0.2 để phù hợp với điện áp thực tế
+    if (calcVoltage > 0) {
+        dustDensity = 0.2 * calcVoltage * 1000.0; // Chuyển đổi sang μg/m3
+    } else {
+        dustDensity = 0;
+    }
+    
+    // Giới hạn giá trị hợp lý
+    if (dustDensity < 0) {
+        dustDensity = 0;
+    } else if (dustDensity > 500) {  // Giới hạn trên thông thường của cảm biến
+        dustDensity = 500;
+    }
+    
+    return dustDensity;
 }
 
 void TaskReadSensor(void *pvParameters) {
@@ -233,16 +251,41 @@ void TaskDisplay(void *pvParameters) {
     for(;;) {
         if (updateDisplay) {
             display.clearDisplay();
-            display.setTextSize(1);
-            display.setTextColor(SSD1306_WHITE);
-            display.setCursor(0,0);
 
-            display.printf("DHT11 T:%.1fC H:%.1f%%\n", avgDHTTemp, avgDHTHumi);
-            display.printf("AHT20 T:%.1fC H:%.1f%%\n", avgAHTTemp, avgAHTHumi);
-            display.printf("P:%.1f hPa\n", avgPressure);
-            display.printf("AQ:%.1f ppm\n", avgAirQuality);
-            display.printf("D:%.2f mg/m3\n", avgDust);
+            // Draw rectangles
+            display.drawRect(0, 22, 127, 20, 1);
+            display.drawRect(0, 1, 127, 19, 1);
+
+            // Draw vertical line
+            display.drawLine(62, 2, 62, 40, 1);
+
+            // Configure text settings
+            display.setTextColor(1);
+            display.setTextWrap(false);
+
+            // Draw text in each section
+            char buf[20];
             
+            // Top row - DHT11 and AHT20 labels
+            display.setCursor(4, 7);
+            display.print("DHT11");
+            display.setCursor(66, 7);
+            display.print("AHT20");
+
+            // Middle row - Temperature values
+            snprintf(buf, sizeof(buf), "%.1fC", avgDHTTemp);
+            display.setCursor(4, 28);
+            display.print(buf);
+
+            snprintf(buf, sizeof(buf), "%.1fC", avgAHTTemp);
+            display.setCursor(66, 28);
+            display.print(buf);
+
+            // Bottom row - Pressure
+            snprintf(buf, sizeof(buf), "%.1f hPa", avgPressure);
+            display.setCursor(3, 49);
+            display.print(buf);
+
             display.display();
             updateDisplay = false;
         }
@@ -367,13 +410,13 @@ void startAPMode() {
     server.begin();
     
     display.clearDisplay();
+    display.setTextColor(1);
     display.setTextSize(1);
-    display.setTextColor(SSD1306_WHITE);
-    display.setCursor(0,0);
+    display.setCursor(0, 0);
     display.println("AP Mode Active");
     display.println("SSID: ESP32_EnvMonitor");
     display.println("Pass: 12345678");
-    display.println(WiFi.softAPIP());
+    display.println(WiFi.softAPIP().toString());
     display.display();
 }
 
@@ -429,14 +472,14 @@ void setup() {
     }
 
     // Initialize OLED
-    if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
+    if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
         Serial.println(F("SSD1306 allocation failed"));
         for(;;);
     }
-
     display.clearDisplay();
     display.setTextSize(1);
-    display.setTextColor(SSD1306_WHITE);
+    display.setTextColor(1);
+    display.setCursor(0,0);
     display.println("Initializing...");
     display.display();
 
