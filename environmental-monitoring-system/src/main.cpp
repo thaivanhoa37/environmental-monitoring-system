@@ -37,6 +37,11 @@
 #include <EEPROM.h>
 #include <ESPAsyncWebServer.h>
 #include <AsyncTCP.h>
+#include <DHT.h>
+
+#define DHT_PIN 4  // GPIO4 = D4
+#define DHT_TYPE DHT11
+DHT dht(DHT_PIN, DHT_TYPE);
 
 // MQTT Topic Definitions
 const char* TOPIC_STATE_TEMPERATURE = "esp32/sensor/temperature";
@@ -177,10 +182,10 @@ float readCO2() {
 }
 
 String getCO2Quality(float ppm) {
-  if (ppm < 800) return "tot";  // Good air quality
+  if (ppm < 800) return "TOT";     // Good air quality
   if (ppm < 1200) return "TB";  // Average
-  if (ppm < 2000) return "kem"; // Poor
-  return "Nguy!";               // Dangerous
+  if (ppm < 2000) return "KEM!";    // Poor
+  return "NGUY";                  // Dangerous
 }
 
 void scanI2C() {
@@ -407,10 +412,32 @@ void TaskReadSensor(void *pvParameters) {
   while (1) {
     sensors_event_t humidity_event, temp_event;
     
+    float dht_temp = dht.readTemperature();
+    float dht_humi = dht.readHumidity();
+    float ath_temp = 0, ath_humi = 0;
+    
     if (ahtInitialized && aht.getEvent(&humidity_event, &temp_event)) {
-      temperature = temp_event.temperature;
-      humidity = humidity_event.relative_humidity;
-    } else {
+      ath_temp = temp_event.temperature;
+      ath_humi = humidity_event.relative_humidity;
+    }
+    
+    // Tính trung bình nếu cả 2 cảm biến đều hoạt động
+    if (!isnan(dht_temp) && !isnan(dht_humi) && ath_temp != 0) {
+      temperature = (dht_temp + ath_temp) / 2;
+      humidity = (dht_humi + ath_humi) / 2;
+    } 
+    // Nếu ATH20 hoạt động
+    else if (ath_temp != 0) {
+      temperature = ath_temp;
+      humidity = ath_humi;
+    }
+    // Nếu DHT11 hoạt động
+    else if (!isnan(dht_temp) && !isnan(dht_humi)) {
+      temperature = dht_temp;
+      humidity = dht_humi;
+    }
+    // Nếu không có cảm biến nào hoạt động
+    else {
       temperature = humidity = 0;
     }
 
@@ -539,6 +566,7 @@ void setup() {
   pinMode(MQ135_PIN, INPUT);
 
   Wire.begin();
+  dht.begin();  // Khởi tạo DHT11
   scanI2C();
   
   oledInitialized = initializeOLED();
