@@ -48,6 +48,29 @@ const char* TOPIC_STATE_TEMPERATURE = "esp32/sensor/temperature";
 const char* TOPIC_STATE_HUMIDITY = "esp32/sensor/humidity";
 const char* TOPIC_STATE_PRESSURE = "esp32/sensor/pressure";
 const char* TOPIC_STATE_CO2 = "esp32/sensor/co2";
+const char* TOPIC_STATE_DUST = "esp32/sensor/dust";
+const char* TOPIC_STATE_AQI = "esp32/sensor/aqi";
+
+// Dust Sensor Configuration
+#define MEASURE_PIN 34  // Chân analog đọc tín hiệu (VO)
+#define LED_POWER_PIN 25  // Chân điều khiển LED của cảm biến
+#define SAMPLING_TIME 280  // Thời gian lấy mẫu (micro giây)
+#define DELTA_TIME 40     // Thời gian delay giữa lấy mẫu (micro giây)
+#define SLEEP_TIME 9680   // Thời gian ngủ (micro giây)
+
+struct AQILevel {
+  float Clow, Chigh;
+  int Ilow, Ihigh;
+};
+
+AQILevel aqiTable[] = {
+  {0.0, 12.0, 0, 50},
+  {12.1, 35.4, 51, 100},
+  {35.5, 55.4, 101, 150},
+  {55.5, 150.4, 151, 200},
+  {150.5, 250.4, 201, 300},
+  {250.5, 500.4, 301, 500}
+};
 
 // OLED Configuration
 #define SCREEN_WIDTH 128
@@ -87,15 +110,18 @@ const int mqtt_port = 1883;
 const char* mqtt_client_id = "ESP32_IOT_Monitor";
 
 // State variables
-float temperature = 0, humidity = 0, pressure = 0, co2ppm = 0;
-float tempSum = 0, humiSum = 0, pressSum = 0, co2Sum = 0;
+float temperature = 0, humidity = 0, pressure = 0, co2ppm = 0, dustDensity = 0;
+float tempSum = 0, humiSum = 0, pressSum = 0, co2Sum = 0, dustSum = 0;
 int count = 0;
 int countTime = 0;
+int aqi = 0, aqiSum = 0;
 
 float avgTemperature = 0;
 float avgHumidity = 0;
 float avgPressure = 0;
 float avgCO2 = 0;
+float avgDust = 0;
+int avgAQI = 0;
 bool updateDisplay = false;
 bool publishSensorFlag = false;
 bool isAPMode = false;
@@ -128,6 +154,27 @@ void startAPMode();
 bool reconnect();
 void publishMQTTSensor();
 float readCO2();
+
+int calculateAQI(float pm25) {
+  if (pm25 <= 0) return 0;
+  if (pm25 > 500) return 500;
+
+  for (int i = 0; i < 6; i++) {
+    if (pm25 >= aqiTable[i].Clow && pm25 <= aqiTable[i].Chigh) {
+      return ((aqiTable[i].Ihigh - aqiTable[i].Ilow) / (aqiTable[i].Chigh - aqiTable[i].Clow)) *
+             (pm25 - aqiTable[i].Clow) + aqiTable[i].Ilow;
+    }
+  }
+  return 0;  // Trả về 0 nếu không khớp
+}
+
+String getAQIQuality(int aqi) {
+  if (aqi <= 50) return "TOT";     // Good
+  if (aqi <= 100) return "TB";     // Moderate
+  if (aqi <= 150) return "KEM";    // Unhealthy for sensitive groups
+  return "NGUY";                   // Unhealthy or worse
+}
+
 
 /*
  * Function: Read CO2 from MQ135
@@ -401,6 +448,12 @@ void publishMQTTSensor() {
 
   snprintf(msg, 50, "%.1f", avgCO2);
   client.publish(TOPIC_STATE_CO2, msg);
+
+  snprintf(msg, 50, "%.1f", avgDust);
+  client.publish(TOPIC_STATE_DUST, msg);
+
+  snprintf(msg, 50, "%d", avgAQI);
+  client.publish(TOPIC_STATE_AQI, msg);
 }
 
 void TaskReadSensor(void *pvParameters) {
@@ -452,17 +505,36 @@ void TaskReadSensor(void *pvParameters) {
 
     co2ppm = readCO2();
 
+    // Read dust sensor
+    digitalWrite(LED_POWER_PIN, LOW);  // Power on the LED
+    delayMicroseconds(SAMPLING_TIME);
+    float voMeasured = analogRead(MEASURE_PIN);  // Read the dust value
+    delayMicroseconds(DELTA_TIME);
+    digitalWrite(LED_POWER_PIN, HIGH);  // Turn the LED off
+    delayMicroseconds(SLEEP_TIME);
+
+    float calcVoltage = voMeasured * (3.3 / 4095.0);  // Convert to voltage
+    dustDensity = (170 * calcVoltage - 0.1);  // Convert to dust density
+    if (dustDensity < 0) dustDensity = 0;
+    
+    aqi = calculateAQI(dustDensity);
+
     if (temperature != 0 && humidity != 0) {
       tempSum += temperature;
       humiSum += humidity;
       if (pressure != 0) pressSum += pressure;
       if (co2ppm > 0) co2Sum += co2ppm;
+      if (dustDensity > 0) {
+        dustSum += dustDensity;
+        aqiSum += aqi;
+      }
       count++;
     }
     countTime++;
 
-    Serial.printf("Temperature: %.1f°C, Humidity: %.1f%%, Pressure: %.1f hPa, CO2: %.1f ppm (%s)\n",
-                 temperature, humidity, pressure, co2ppm, getCO2Quality(co2ppm).c_str());
+    Serial.printf("Temperature: %.1f°C, Humidity: %.1f%%, Pressure: %.1f hPa\n", temperature, humidity, pressure);
+    Serial.printf("CO2: %.1f ppm (%s), Dust: %.1f ug/m3, AQI: %d (%s)\n",
+                 co2ppm, getCO2Quality(co2ppm).c_str(), dustDensity, aqi, getAQIQuality(aqi).c_str());
 
     vTaskDelay(pdMS_TO_TICKS(1000)); // Chậm lại để dễ đọc
   }
@@ -476,18 +548,23 @@ void TaskPrintData(void *pvParameters) {
         avgHumidity = humiSum / count;
         avgPressure = pressSum / count;
         avgCO2 = co2Sum / count;
+        avgDust = dustSum / count;
+        avgAQI = aqiSum / count;
         
         Serial.println("\n=== 30-Second Averages ===");
         Serial.printf("Temperature: %.1f°C\n", avgTemperature);
         Serial.printf("Humidity: %.1f%%\n", avgHumidity);
         Serial.printf("Pressure: %.1f hPa\n", avgPressure);
         Serial.printf("CO2: %.1f ppm (%s)\n", avgCO2, getCO2Quality(avgCO2).c_str());
+        Serial.printf("Dust: %.1f ug/m3\n", avgDust);
+        Serial.printf("AQI: %d (%s)\n", avgAQI, getAQIQuality(avgAQI).c_str());
         Serial.println("=========================\n");
 
         updateDisplay = true;
         publishSensorFlag = true;
 
-        tempSum = humiSum = pressSum = co2Sum = 0;
+        tempSum = humiSum = pressSum = co2Sum = dustSum = 0;
+        aqiSum = 0;
         count = countTime = 0;
       }
     }
@@ -502,21 +579,21 @@ void TaskDisplay(void *pvParameters) {
       display.setTextSize(1);
       display.setTextColor(SSD1306_WHITE);
       
-      // Temperature
+      // Row 1: Temperature and Humidity
       display.setCursor(0, 0);
-      display.printf("Temp: %.1f C\n", avgTemperature);
+      display.printf("Tem:%.1f*C |Hum:%.1f%%", avgTemperature, avgHumidity);
       
-      // Humidity
+      // Row 2: CO2 with quality
       display.setCursor(0, 16);
-      display.printf("Humi: %.1f %%\n", avgHumidity);
+      display.printf("Co2:%.0f ppm(%s)", avgCO2, getCO2Quality(avgCO2).c_str());
       
-      // Pressure
+      // Row 3: Dust
       display.setCursor(0, 32);
-      display.printf("Press: %.0f hPa\n", avgPressure);
+      display.printf("Dust:%.1f ug/m3", avgDust);
       
-      // CO2 with quality
+      // Row 4: AQI with quality
       display.setCursor(0, 48);
-      display.printf("CO2: %d ppm (%s)", (int)avgCO2, getCO2Quality(avgCO2).c_str());
+      display.printf("AQI:%d(%s)", avgAQI, getAQIQuality(avgAQI).c_str());
       
       display.display();
       updateDisplay = false;
@@ -562,8 +639,11 @@ void setup() {
   Serial.begin(115200);
   vTaskDelay(pdMS_TO_TICKS(1000));
 
-  // Initialize MQ135 pin
+  // Initialize sensor pins
   pinMode(MQ135_PIN, INPUT);
+  pinMode(MEASURE_PIN, INPUT);
+  pinMode(LED_POWER_PIN, OUTPUT);
+  digitalWrite(LED_POWER_PIN, HIGH);  // Turn off LED initially
 
   Wire.begin();
   dht.begin();  // Khởi tạo DHT11

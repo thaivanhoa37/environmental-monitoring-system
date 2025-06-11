@@ -62,7 +62,20 @@
   + Áp suất: 300-1100 hPa (BMP280)
   + CO2: 400-5000 ppm (MQ135)
 
-## 6. SƠ ĐỒ KẾT NỐI
+## 6. TIÊU CHUẨN CHẤT LƯỢNG KHÔNG KHÍ (AQI)
+
+Theo tiêu chuẩn của Tổ chức Y tế Thế giới (WHO) và EPA (Mỹ), chỉ số PM2.5 được phân loại như sau:
+
+| PM2.5 (µg/m³) | Chỉ số AQI | Mức độ        | Màu sắc |
+|---------------|------------|---------------|---------|
+| 0-12          | 0-50       | Tốt          | Xanh lá |
+| 12.1-35.4     | 51-100     | Trung bình   | Vàng    |
+| 35.5-55.4     | 101-150    | Không tốt cho nhóm nhạy cảm | Cam     |
+| 55.5-150.4    | 151-200    | Xấu          | Đỏ      |
+| 150.5-250.4   | 201-300    | Rất xấu      | Tím     |
+| 250.5-500.4   | 301-500    | Nguy hiểm    | Nâu đỏ  |
+
+## 7. SƠ ĐỒ KẾT NỐI
 ```
                                  ESP32 DevKit
                               ┌──────────────┐
@@ -83,7 +96,9 @@ Bus    │    │               │     3.3V     │
        │                    └──────────────┘
        │                          │
        └──────────────────────────┘
+```
 
+### Chú thích sơ đồ:
 • Các thiết bị I2C (AHT20, BMP280, OLED) chia sẻ chung đường SDA/SCL
 • MQ135 cần nguồn 5V riêng
 • DHT11 cần điện trở pull-up 10kΩ
