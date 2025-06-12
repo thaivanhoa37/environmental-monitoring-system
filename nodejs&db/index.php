@@ -213,6 +213,102 @@ $conn->close();
             opacity: 0.8;
         }
 
+        .assessment-text {
+            font-size: 0.85rem;
+            padding: 8px 15px;
+            border-radius: 6px;
+            background: white;
+            display: block;
+            margin-top: -10px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            border-bottom: 3px solid transparent;
+        }
+
+        .assessment-text.good {
+            color: var(--success);
+            border-bottom-color: var(--success);
+        }
+
+        .assessment-text.warning {
+            color: var(--warning);
+            border-bottom-color: var(--warning);
+        }
+
+        .assessment-text.danger {
+            color: var(--danger);
+            border-bottom-color: var(--danger);
+        }
+
+        .alerts-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .alert-item {
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .alert-item.warning {
+            background-color: rgba(246, 194, 62, 0.1);
+            border-left: 4px solid var(--warning);
+        }
+
+        .alert-item.danger {
+            background-color: rgba(231, 74, 59, 0.1);
+            border-left: 4px solid var(--danger);
+        }
+
+        .alert-item.good {
+            background-color: rgba(28, 200, 138, 0.1);
+            border-left: 4px solid var(--success);
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: bold;
+            color: var(--dark);
+            margin-bottom: 0.25rem;
+            font-size: 1.1rem;
+        }
+
+        .alert-value {
+            font-size: 1rem;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .who-assessment {
+            color: var(--dark);
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(0,0,0,0.05);
+            border-radius: 0.25rem;
+        }
+
+        .who-limits {
+            font-size: 0.85rem;
+            color: var(--dark);
+            opacity: 0.8;
+            margin-top: 0.5rem;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            padding-top: 0.5rem;
+        }
+
         .chart-container {
             background: white;
             padding: 1rem;
@@ -235,6 +331,8 @@ $conn->close();
     </div>
 
     <div class="container">
+
+        <!-- Sensor Cards -->
         <div class="row">
             <div class="col-md-4">
                 <div class="sensor-card temperature">
@@ -290,12 +388,13 @@ $conn->close();
                         <i class="fas fa-cloud sensor-icon"></i>
                     </div>
                 </div>
+                <div id="co2Assessment" class="assessment-text"></div>
             </div>
             <div class="col-md-4">
                 <div class="sensor-card dust">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h4>Dust</h4>
+                            <h4>Dust (PM2.5)</h4>
                             <div class="sensor-value">
                                 <span id="currentDust"><?php echo number_format($latest['dust'], 1); ?></span>µg/m³
                             </div>
@@ -303,6 +402,7 @@ $conn->close();
                         <i class="fas fa-smog sensor-icon"></i>
                     </div>
                 </div>
+                <div id="dustAssessment" class="assessment-text"></div>
             </div>
             <div class="col-md-4">
                 <div class="sensor-card aqi">
@@ -316,9 +416,17 @@ $conn->close();
                         <i class="fas fa-wind sensor-icon"></i>
                     </div>
                 </div>
+                <div id="aqiAssessment" class="assessment-text"></div>
             </div>
         </div>
-
+        <!-- Air Quality Assessment Section -->
+        <div class="alerts-section">
+            <h4 class="mb-4">Đánh giá chất lượng không khí theo WHO</h4>
+            <div id="alertsContainer">
+                <!-- Alerts will be dynamically inserted here -->
+            </div>
+        </div>
+        <!-- Charts -->
         <div class="row">
             <div class="col-md-6">
                 <div class="card">
@@ -399,6 +507,87 @@ $conn->close();
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0/dist/chartjs-adapter-moment.min.js"></script>
 
     <script>
+        // WHO guidelines and thresholds
+        const WHO_GUIDELINES = {
+            co2: {
+                safe: 1000,
+                moderate: 2000,
+                danger: 5000,
+                unit: 'ppm',
+                recommendations: {
+                    good: 'Chất lượng không khí tốt',
+                    warning: 'Cần tăng cường thông gió',
+                    danger: 'Cần thông gió ngay lập tức'
+                }
+            },
+            dust: {
+                safe: 100,
+                moderate: 150,
+                danger: 200,
+                unit: 'µg/m³',
+                recommendations: {
+                    good: 'Chất lượng không khí tốt',
+                    warning: 'Có thể gây kích ứng đường hô hấp',
+                    danger: 'Nguy hại cho sức khỏe hô hấp'
+                }
+            },
+            aqi: {
+                safe: 100,
+                moderate: 150,
+                danger: 200,
+                unit: '',
+                recommendations: {
+                    good: 'Chất lượng không khí tốt',
+                    warning: 'Hạn chế hoạt động ngoài trời kéo dài',
+                    danger: 'Không nên hoạt động ngoài trời, đóng cửa sổ'
+                }
+            }
+        };
+
+        function getAssessment(value, parameter) {
+            const guidelines = WHO_GUIDELINES[parameter];
+            if (value <= guidelines.safe) return 'good';
+            if (value <= guidelines.moderate) return 'warning';
+            return 'danger';
+        }
+
+        function updateAlertsSection(data) {
+            const container = document.getElementById('alertsContainer');
+            container.innerHTML = '';
+
+            const parameters = {
+                co2: { label: 'Nồng độ CO₂', value: data.co2.value },
+                dust: { label: 'Bụi mịn PM2.5', value: data.dust.value },
+                aqi: { label: 'Chỉ số AQI', value: data.aqi.value }
+            };
+
+            for (const [param, info] of Object.entries(parameters)) {
+                const guidelines = WHO_GUIDELINES[param];
+                const assessment = getAssessment(info.value, param);
+                const unit = guidelines.unit ? ` ${guidelines.unit}` : '';
+
+                const alertElement = document.createElement('div');
+                alertElement.className = `alert-item ${assessment}`;
+                alertElement.innerHTML = `
+                    <div class="alert-content">
+                        <div class="alert-title">${info.label}</div>
+                        <div class="alert-value">Giá trị hiện tại: ${info.value}${unit}</div>
+                        <div class="who-assessment">
+                            <i class="fas fa-info-circle"></i> 
+                            ${guidelines.recommendations[assessment]}
+                        </div>
+                        <div class="who-limits">
+                            Tiêu chuẩn WHO: 
+                            An toàn < ${guidelines.safe}${unit} | 
+                            Trung bình < ${guidelines.moderate}${unit} | 
+                            Nguy hiểm ≥ ${guidelines.danger}${unit}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(alertElement);
+            }
+        }
+
         let tempChart, humidityChart, co2Chart, dustChart;
         let timeRange = 24;
 
@@ -516,12 +705,45 @@ $conn->close();
             if (!data || !data.latest_data) return;
 
             const latest = data.latest_data;
+            // Update values
             document.getElementById('currentTemp').textContent = parseFloat(latest.temperature).toFixed(1);
             document.getElementById('currentHumidity').textContent = parseFloat(latest.humidity).toFixed(1);
             document.getElementById('currentPressure').textContent = parseFloat(latest.pressure).toFixed(1);
             document.getElementById('currentCO2').textContent = parseFloat(latest.co2).toFixed(1);
             document.getElementById('currentDust').textContent = parseFloat(latest.dust).toFixed(1);
             document.getElementById('currentAQI').textContent = parseFloat(latest.aqi).toFixed(1);
+
+            // Update assessment text for each sensor card
+            const co2Value = parseFloat(latest.co2);
+            const dustValue = parseFloat(latest.dust);
+            const aqiValue = parseFloat(latest.aqi);
+
+            function updateAssessmentElement(elementId, value, parameter) {
+                const assessment = getAssessment(value, parameter);
+                const element = document.getElementById(elementId);
+                const levelText = {
+                    'good': 'An toàn',
+                    'warning': 'Trung bình',
+                    'danger': 'Nguy hiểm'
+                };
+                
+                element.className = `assessment-text ${assessment}`;
+                element.innerHTML = `
+                    <strong>${levelText[assessment]}</strong><br>
+                    ${WHO_GUIDELINES[parameter].recommendations[assessment]}
+                `;
+            }
+
+            updateAssessmentElement('co2Assessment', co2Value, 'co2');
+            updateAssessmentElement('dustAssessment', dustValue, 'dust');
+            updateAssessmentElement('aqiAssessment', aqiValue, 'aqi');
+
+            // Update WHO assessment section
+            updateAlertsSection({
+                co2: { value: parseFloat(latest.co2) },
+                dust: { value: parseFloat(latest.dust) },
+                aqi: { value: parseFloat(latest.aqi) }
+            });
             
             document.getElementById('lastUpdate').textContent = moment(latest.timestamp).format('HH:mm:ss');
         }
