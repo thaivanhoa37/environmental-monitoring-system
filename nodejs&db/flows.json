@@ -851,6 +851,153 @@
         "className": ""
     },
     {
+        "id": "fb84a26e67e28da5",
+        "type": "group",
+        "z": "b3dd6b5b104859ea",
+        "name": "Web socket and MQTT Handler",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "websocket_in",
+            "command_handler",
+            "mqtt_out",
+            "debug",
+            "mqtt_state_in",
+            "state_handler",
+            "websocket_out"
+        ],
+        "x": 74,
+        "y": 699,
+        "w": 662,
+        "h": 202
+    },
+    {
+        "id": "websocket_in",
+        "type": "websocket in",
+        "z": "b3dd6b5b104859ea",
+        "g": "fb84a26e67e28da5",
+        "name": "WebSocket In",
+        "server": "f5494776a418eb99",
+        "client": "",
+        "x": 170,
+        "y": 740,
+        "wires": [
+            [
+                "command_handler"
+            ]
+        ]
+    },
+    {
+        "id": "command_handler",
+        "type": "function",
+        "z": "b3dd6b5b104859ea",
+        "g": "fb84a26e67e28da5", 
+        "name": "Format MQTT Command",
+        "func": "try {\n    const data = JSON.parse(msg.payload);\n    \n    if (!data.type || !data.state) return null;\n    \n    return {\n        topic: `esp32/${data.type}/set`,\n        payload: data.state,\n        retain: false\n    };\n} catch (e) {\n    node.error(e);\n    return null;\n}",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 740,
+        "wires": [
+            [
+                "mqtt_out",
+                "debug"
+            ]
+        ]
+    },
+    {
+        "id": "mqtt_out",
+        "type": "mqtt out",
+        "z": "b3dd6b5b104859ea",
+        "g": "fb84a26e67e28da5",
+        "name": "To ESP32",
+        "topic": "",
+        "qos": "1",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "6df0540f12236ba5",
+        "x": 630,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "debug",
+        "type": "debug",
+        "z": "b3dd6b5b104859ea",
+        "g": "fb84a26e67e28da5",
+        "name": "Debug",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 630,
+        "y": 800,
+        "wires": []
+    },
+    {
+        "id": "mqtt_state_in",
+        "type": "mqtt in",
+        "z": "b3dd6b5b104859ea",
+        "g": "fb84a26e67e28da5",
+        "name": "ESP32 States",
+        "topic": "esp32/+/state",
+        "qos": "1",
+        "datatype": "auto",
+        "broker": "6df0540f12236ba5",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 170,
+        "y": 800,
+        "wires": [
+            [
+                "state_handler"
+            ]
+        ]
+    },
+    {
+        "id": "state_handler",
+        "type": "function",
+        "z": "b3dd6b5b104859ea",
+        "g": "fb84a26e67e28da5",
+        "name": "Format State Update",
+        "func": "const device = msg.topic.split('/')[1];\n\nreturn {\n    payload: {\n        type: device,\n        state: msg.payload\n    }\n};",
+        "outputs": 1,
+        "x": 400,
+        "y": 800,
+        "wires": [
+            [
+                "websocket_out"
+            ]
+        ]
+    },
+    {
+        "id": "websocket_out",
+        "type": "websocket out",
+        "z": "b3dd6b5b104859ea",
+        "g": "fb84a26e67e28da5",
+        "name": "WebSocket Out",
+        "server": "f5494776a418eb99",
+        "client": "",
+        "x": 630,
+        "y": 860,
+        "wires": []
+    },
+    {
         "id": "c08db5e37956216c",
         "type": "MySQLdatabase",
         "name": "Environment DB",
@@ -859,6 +1006,12 @@
         "db": "environmental_monitoring_system",
         "tz": "Asia/Ho_Chi_Minh",
         "charset": "UTF8"
+    },
+    {
+        "id": "f5494776a418eb99",
+        "type": "websocket-listener",
+        "path": "/ws/node/state",
+        "wholemsg": "false"
     },
     {
         "id": "environment_tab",
