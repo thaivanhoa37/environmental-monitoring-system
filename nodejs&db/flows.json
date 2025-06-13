@@ -1,38 +1,38 @@
 [
     {
-        "id": "b3dd6b5b104859ea",
+        "id": "9ebc91553e1f5618",
         "type": "tab",
         "label": "Environmental Monitoring",
         "disabled": false,
         "info": "Flow giám sát môi trường với ESP32 và Firebase"
     },
     {
-        "id": "f18fde582b6c6733",
+        "id": "fa3ed28ec445ce6d",
         "type": "group",
-        "z": "b3dd6b5b104859ea",
-        "name": "Database Storage",
+        "z": "9ebc91553e1f5618",
+        "name": "Database Storage SQL",
         "style": {
             "label": true
         },
         "nodes": [
-            "09fb20cd3f152d6e",
-            "897576b8ec3fe325",
-            "7d11011dfd1fd343",
-            "40a1c6bccc7bbc05",
-            "1cd67f210454028b",
-            "0531ccfaaf104bdb",
-            "81944bccd39a2782",
-            "6f9fc118e34f23e3"
+            "ec1f10017cb99d94",
+            "6fde0c528ba2deed",
+            "7a686796d8e2fc6c",
+            "037ec3d60b7b4221",
+            "c392ec045342451a",
+            "a2ebe0859c2b9cb1",
+            "ee4eaec821a7f6fb",
+            "f05004150efcdb78"
         ],
         "x": 514,
-        "y": 139,
+        "y": 19,
         "w": 652,
         "h": 282
     },
     {
-        "id": "135708764a9d4cc4",
+        "id": "9b288db22921debb",
         "type": "group",
-        "z": "b3dd6b5b104859ea",
+        "z": "9ebc91553e1f5618",
         "style": {
             "stroke": "#999999",
             "stroke-opacity": "1",
@@ -43,35 +43,87 @@
             "color": "#a4a4a4"
         },
         "nodes": [
-            "09c634dd3f052e9b",
-            "786f722465f02e03",
-            "96ce59b8bf197de1",
-            "36b77f4f355262e0",
-            "36db04385250b82f",
-            "98ed8143764e3f9c",
-            "a3c33afad132ab24",
-            "7264166fedb8a969",
-            "16f963d9b8ab7bc9",
-            "7c819034873ef652",
-            "6209ef7e26aa83ba",
-            "4a742df634de34c7",
-            "5e4e6f3ab2b8fe75",
-            "cebabb1a1a7f8646",
-            "5a3a24c29e41eb05",
-            "710b29bffd0f9deb",
-            "e2b77f2c65b7284e",
-            "0f341d4cdee14bbb"
+            "bea58589ece5a7bc",
+            "83b85a8f613ee653",
+            "10027674dac449c6",
+            "baa3aefb68089308",
+            "208121a2dfbfb50a",
+            "d4433dc42012cf14",
+            "bd3769e453455321",
+            "91148bf00265b40f",
+            "c5069adc62a5b50a",
+            "fd5b11f6fc7239d0",
+            "5393e22e80f096f3",
+            "c338a111d0a34238",
+            "52624ff6ec020749",
+            "c0e237b903363ba2",
+            "64388b22e7ac8f35",
+            "2e8fa44ccef70a25",
+            "0b5fa103c68c3e10",
+            "25c7a8e17322b24c"
         ],
         "x": 54,
-        "y": -1,
+        "y": 19,
         "w": 452,
         "h": 622
     },
     {
-        "id": "09c634dd3f052e9b",
+        "id": "2130546fa05bd666",
+        "type": "group",
+        "z": "9ebc91553e1f5618",
+        "name": "Web socket and MQTT Handler",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "2f206dbccdb8d40d",
+            "868db8b61c035d5f",
+            "3b186c910827e7e0",
+            "62692082a78c95fe",
+            "06eadb5101e0a5c8",
+            "48bbbc082319ceb1",
+            "32efceb760331107"
+        ],
+        "x": 54,
+        "y": 639,
+        "w": 1112,
+        "h": 222
+    },
+    {
+        "id": "dafd05e87c0cecc1",
+        "type": "group",
+        "z": "9ebc91553e1f5618",
+        "name": "Firebase Integration",
+        "style": {
+            "stroke": "#999999",
+            "stroke-opacity": "1",
+            "fill": "none",
+            "fill-opacity": "1",
+            "label": true,
+            "label-position": "nw",
+            "color": "#a4a4a4"
+        },
+        "nodes": [
+            "b9a2952276adcc7c",
+            "d965608e4854df89",
+            "54002b5f92d33780",
+            "9b67a20ecc966dd5",
+            "07ebd42315ced98f",
+            "156fcaa80f399b18",
+            "32a06c4ee03cb0a3",
+            "63962291738db7bf",
+            "d9749fb07fc85ae5"
+        ],
+        "x": 514,
+        "y": 299,
+        "w": 652,
+        "h": 342
+    },
+    {
+        "id": "bea58589ece5a7bc",
         "type": "mqtt in",
-        "z": "b3dd6b5b104859ea",
-        "g": "135708764a9d4cc4",
+        "z": "9ebc91553e1f5618",
+        "g": "9b288db22921debb",
         "name": "Humidity",
         "topic": "esp32/sensor/humidity",
         "qos": "2",
@@ -82,19 +134,19 @@
         "rh": 0,
         "inputs": 0,
         "x": 160,
-        "y": 160,
+        "y": 180,
         "wires": [
             [
-                "7264166fedb8a969",
-                "cebabb1a1a7f8646"
+                "91148bf00265b40f",
+                "c0e237b903363ba2"
             ]
         ]
     },
     {
-        "id": "786f722465f02e03",
+        "id": "83b85a8f613ee653",
         "type": "mqtt in",
-        "z": "b3dd6b5b104859ea",
-        "g": "135708764a9d4cc4",
+        "z": "9ebc91553e1f5618",
+        "g": "9b288db22921debb",
         "name": "Pressure",
         "topic": "esp32/sensor/pressure",
         "qos": "2",
@@ -105,19 +157,19 @@
         "rh": 0,
         "inputs": 0,
         "x": 160,
-        "y": 260,
+        "y": 280,
         "wires": [
             [
-                "16f963d9b8ab7bc9",
-                "5a3a24c29e41eb05"
+                "c5069adc62a5b50a",
+                "64388b22e7ac8f35"
             ]
         ]
     },
     {
-        "id": "96ce59b8bf197de1",
+        "id": "10027674dac449c6",
         "type": "mqtt in",
-        "z": "b3dd6b5b104859ea",
-        "g": "135708764a9d4cc4",
+        "z": "9ebc91553e1f5618",
+        "g": "9b288db22921debb",
         "name": "CO2",
         "topic": "esp32/sensor/co2",
         "qos": "2",
@@ -128,19 +180,19 @@
         "rh": 0,
         "inputs": 0,
         "x": 170,
-        "y": 360,
+        "y": 380,
         "wires": [
             [
-                "7c819034873ef652",
-                "710b29bffd0f9deb"
+                "fd5b11f6fc7239d0",
+                "2e8fa44ccef70a25"
             ]
         ]
     },
     {
-        "id": "36b77f4f355262e0",
+        "id": "baa3aefb68089308",
         "type": "mqtt in",
-        "z": "b3dd6b5b104859ea",
-        "g": "135708764a9d4cc4",
+        "z": "9ebc91553e1f5618",
+        "g": "9b288db22921debb",
         "name": "Dust",
         "topic": "esp32/sensor/dust",
         "qos": "2",
@@ -151,19 +203,19 @@
         "rh": 0,
         "inputs": 0,
         "x": 170,
-        "y": 460,
+        "y": 480,
         "wires": [
             [
-                "6209ef7e26aa83ba",
-                "e2b77f2c65b7284e"
+                "5393e22e80f096f3",
+                "0b5fa103c68c3e10"
             ]
         ]
     },
     {
-        "id": "36db04385250b82f",
+        "id": "208121a2dfbfb50a",
         "type": "mqtt in",
-        "z": "b3dd6b5b104859ea",
-        "g": "135708764a9d4cc4",
+        "z": "9ebc91553e1f5618",
+        "g": "9b288db22921debb",
         "name": "AQI",
         "topic": "esp32/sensor/aqi",
         "qos": "2",
@@ -174,19 +226,19 @@
         "rh": 0,
         "inputs": 0,
         "x": 170,
-        "y": 560,
+        "y": 580,
         "wires": [
             [
-                "4a742df634de34c7",
-                "0f341d4cdee14bbb"
+                "c338a111d0a34238",
+                "25c7a8e17322b24c"
             ]
         ]
     },
     {
-        "id": "98ed8143764e3f9c",
+        "id": "d4433dc42012cf14",
         "type": "mqtt in",
-        "z": "b3dd6b5b104859ea",
-        "g": "135708764a9d4cc4",
+        "z": "9ebc91553e1f5618",
+        "g": "9b288db22921debb",
         "name": "Temperature",
         "topic": "esp32/sensor/temperature",
         "qos": "2",
@@ -197,19 +249,19 @@
         "rh": 0,
         "inputs": 0,
         "x": 150,
-        "y": 60,
+        "y": 80,
         "wires": [
             [
-                "a3c33afad132ab24",
-                "5e4e6f3ab2b8fe75"
+                "bd3769e453455321",
+                "52624ff6ec020749"
             ]
         ]
     },
     {
-        "id": "a3c33afad132ab24",
+        "id": "bd3769e453455321",
         "type": "ui_gauge",
-        "z": "b3dd6b5b104859ea",
-        "g": "135708764a9d4cc4",
+        "z": "9ebc91553e1f5618",
+        "g": "9b288db22921debb",
         "name": "Temperature Gauge",
         "group": "5aec396a7f817308",
         "order": 1,
@@ -231,14 +283,14 @@
         "diff": false,
         "className": "",
         "x": 380,
-        "y": 40,
+        "y": 60,
         "wires": []
     },
     {
-        "id": "7264166fedb8a969",
+        "id": "91148bf00265b40f",
         "type": "ui_gauge",
-        "z": "b3dd6b5b104859ea",
-        "g": "135708764a9d4cc4",
+        "z": "9ebc91553e1f5618",
+        "g": "9b288db22921debb",
         "name": "Humidity Gauge",
         "group": "5aec396a7f817308",
         "order": 2,
@@ -260,14 +312,14 @@
         "diff": false,
         "className": "",
         "x": 360,
-        "y": 140,
+        "y": 160,
         "wires": []
     },
     {
-        "id": "16f963d9b8ab7bc9",
+        "id": "c5069adc62a5b50a",
         "type": "ui_gauge",
-        "z": "b3dd6b5b104859ea",
-        "g": "135708764a9d4cc4",
+        "z": "9ebc91553e1f5618",
+        "g": "9b288db22921debb",
         "name": "Pressure Gauge",
         "group": "5aec396a7f817308",
         "order": 3,
@@ -289,14 +341,14 @@
         "diff": false,
         "className": "",
         "x": 360,
-        "y": 240,
+        "y": 260,
         "wires": []
     },
     {
-        "id": "7c819034873ef652",
+        "id": "fd5b11f6fc7239d0",
         "type": "ui_gauge",
-        "z": "b3dd6b5b104859ea",
-        "g": "135708764a9d4cc4",
+        "z": "9ebc91553e1f5618",
+        "g": "9b288db22921debb",
         "name": "CO2 Gauge",
         "group": "94f03bc6e0320edd",
         "order": 1,
@@ -318,14 +370,14 @@
         "diff": false,
         "className": "",
         "x": 350,
-        "y": 340,
+        "y": 360,
         "wires": []
     },
     {
-        "id": "6209ef7e26aa83ba",
+        "id": "5393e22e80f096f3",
         "type": "ui_gauge",
-        "z": "b3dd6b5b104859ea",
-        "g": "135708764a9d4cc4",
+        "z": "9ebc91553e1f5618",
+        "g": "9b288db22921debb",
         "name": "Dust Gauge",
         "group": "94f03bc6e0320edd",
         "order": 2,
@@ -347,14 +399,14 @@
         "diff": false,
         "className": "",
         "x": 350,
-        "y": 440,
+        "y": 460,
         "wires": []
     },
     {
-        "id": "4a742df634de34c7",
+        "id": "c338a111d0a34238",
         "type": "ui_gauge",
-        "z": "b3dd6b5b104859ea",
-        "g": "135708764a9d4cc4",
+        "z": "9ebc91553e1f5618",
+        "g": "9b288db22921debb",
         "name": "AQI Gauge",
         "group": "94f03bc6e0320edd",
         "order": 3,
@@ -376,14 +428,14 @@
         "diff": false,
         "className": "",
         "x": 350,
-        "y": 540,
+        "y": 560,
         "wires": []
     },
     {
-        "id": "5e4e6f3ab2b8fe75",
+        "id": "52624ff6ec020749",
         "type": "ui_chart",
-        "z": "b3dd6b5b104859ea",
-        "g": "135708764a9d4cc4",
+        "z": "9ebc91553e1f5618",
+        "g": "9b288db22921debb",
         "name": "Temperature History",
         "group": "4cfb1c5353984686",
         "order": 1,
@@ -411,16 +463,16 @@
         "useDifferentColor": false,
         "className": "",
         "x": 380,
-        "y": 80,
+        "y": 100,
         "wires": [
             []
         ]
     },
     {
-        "id": "cebabb1a1a7f8646",
+        "id": "c0e237b903363ba2",
         "type": "ui_chart",
-        "z": "b3dd6b5b104859ea",
-        "g": "135708764a9d4cc4",
+        "z": "9ebc91553e1f5618",
+        "g": "9b288db22921debb",
         "name": "Humidity History",
         "group": "4cfb1c5353984686",
         "order": 2,
@@ -448,16 +500,16 @@
         "useDifferentColor": false,
         "className": "",
         "x": 360,
-        "y": 180,
+        "y": 200,
         "wires": [
             []
         ]
     },
     {
-        "id": "5a3a24c29e41eb05",
+        "id": "64388b22e7ac8f35",
         "type": "ui_chart",
-        "z": "b3dd6b5b104859ea",
-        "g": "135708764a9d4cc4",
+        "z": "9ebc91553e1f5618",
+        "g": "9b288db22921debb",
         "name": "Pressure History",
         "group": "3302b0f6c88da3e5",
         "order": 1,
@@ -485,16 +537,16 @@
         "useDifferentColor": false,
         "className": "",
         "x": 360,
-        "y": 280,
+        "y": 300,
         "wires": [
             []
         ]
     },
     {
-        "id": "710b29bffd0f9deb",
+        "id": "2e8fa44ccef70a25",
         "type": "ui_chart",
-        "z": "b3dd6b5b104859ea",
-        "g": "135708764a9d4cc4",
+        "z": "9ebc91553e1f5618",
+        "g": "9b288db22921debb",
         "name": "CO2 History",
         "group": "3302b0f6c88da3e5",
         "order": 2,
@@ -522,16 +574,16 @@
         "useDifferentColor": false,
         "className": "",
         "x": 350,
-        "y": 380,
+        "y": 400,
         "wires": [
             []
         ]
     },
     {
-        "id": "e2b77f2c65b7284e",
+        "id": "0b5fa103c68c3e10",
         "type": "ui_chart",
-        "z": "b3dd6b5b104859ea",
-        "g": "135708764a9d4cc4",
+        "z": "9ebc91553e1f5618",
+        "g": "9b288db22921debb",
         "name": "Dust History",
         "group": "68e8d7ac28844c49",
         "order": 1,
@@ -559,16 +611,16 @@
         "useDifferentColor": false,
         "className": "",
         "x": 350,
-        "y": 480,
+        "y": 500,
         "wires": [
             []
         ]
     },
     {
-        "id": "0f341d4cdee14bbb",
+        "id": "25c7a8e17322b24c",
         "type": "ui_chart",
-        "z": "b3dd6b5b104859ea",
-        "g": "135708764a9d4cc4",
+        "z": "9ebc91553e1f5618",
+        "g": "9b288db22921debb",
         "name": "AQI History",
         "group": "68e8d7ac28844c49",
         "order": 2,
@@ -596,16 +648,16 @@
         "useDifferentColor": false,
         "className": "",
         "x": 350,
-        "y": 580,
+        "y": 600,
         "wires": [
             []
         ]
     },
     {
-        "id": "09fb20cd3f152d6e",
+        "id": "ec1f10017cb99d94",
         "type": "function",
-        "z": "b3dd6b5b104859ea",
-        "g": "f18fde582b6c6733",
+        "z": "9ebc91553e1f5618",
+        "g": "fa3ed28ec445ce6d",
         "name": "Format MySQL Data",
         "func": "let sensor = context.get('sensor') || {};\n\nswitch (msg.topic) {\n    case 'esp32/sensor/temperature':\n        sensor.temperature = parseFloat(msg.payload);\n        break;\n    case 'esp32/sensor/humidity':\n        sensor.humidity = parseFloat(msg.payload);\n        break;\n    case 'esp32/sensor/pressure':\n        sensor.pressure = parseFloat(msg.payload);\n        break;\n    case 'esp32/sensor/co2':\n        sensor.co2 = parseFloat(msg.payload);\n        break;\n    case 'esp32/sensor/dust':\n        sensor.dust = parseFloat(msg.payload);\n        break;\n    case 'esp32/sensor/aqi':\n        sensor.aqi = parseFloat(msg.payload);\n        break;\n}\n\ncontext.set('sensor', sensor);\n\n// Check if we have all sensor readings\nif (sensor.temperature !== undefined &&\n    sensor.humidity !== undefined &&\n    sensor.pressure !== undefined &&\n    sensor.co2 !== undefined &&\n    sensor.dust !== undefined &&\n    sensor.aqi !== undefined) {\n    \n    let now = new Date();\n    now.setHours(now.getHours() + 7); // Vietnam timezone\n    let timestamp = now.toISOString().slice(0, 19).replace('T', ' ');\n    \n    msg.topic = `INSERT INTO sensor_data (temperature, humidity, pressure, co2, dust, aqi, timestamp) VALUES (${sensor.temperature}, ${sensor.humidity}, ${sensor.pressure}, ${sensor.co2}, ${sensor.dust}, ${sensor.aqi}, '${timestamp}')`;\n    \n    // Reset sensor data after storing\n    context.set('sensor', {});\n    return msg;\n}\n\nreturn null;",
         "outputs": 1,
@@ -615,31 +667,31 @@
         "finalize": "",
         "libs": [],
         "x": 840,
-        "y": 280,
+        "y": 160,
         "wires": [
             [
-                "897576b8ec3fe325"
+                "6fde0c528ba2deed"
             ]
         ]
     },
     {
-        "id": "897576b8ec3fe325",
+        "id": "6fde0c528ba2deed",
         "type": "mysql",
-        "z": "b3dd6b5b104859ea",
-        "g": "f18fde582b6c6733",
+        "z": "9ebc91553e1f5618",
+        "g": "fa3ed28ec445ce6d",
         "mydb": "c08db5e37956216c",
         "name": "MySQL Storage",
         "x": 1060,
-        "y": 280,
+        "y": 160,
         "wires": [
             []
         ]
     },
     {
-        "id": "7d11011dfd1fd343",
+        "id": "7a686796d8e2fc6c",
         "type": "mqtt in",
-        "z": "b3dd6b5b104859ea",
-        "g": "f18fde582b6c6733",
+        "z": "9ebc91553e1f5618",
+        "g": "fa3ed28ec445ce6d",
         "name": "Humidity",
         "topic": "esp32/sensor/humidity",
         "qos": "2",
@@ -650,18 +702,18 @@
         "rh": 0,
         "inputs": 0,
         "x": 620,
-        "y": 220,
+        "y": 100,
         "wires": [
             [
-                "09fb20cd3f152d6e"
+                "ec1f10017cb99d94"
             ]
         ]
     },
     {
-        "id": "40a1c6bccc7bbc05",
+        "id": "037ec3d60b7b4221",
         "type": "mqtt in",
-        "z": "b3dd6b5b104859ea",
-        "g": "f18fde582b6c6733",
+        "z": "9ebc91553e1f5618",
+        "g": "fa3ed28ec445ce6d",
         "name": "Pressure",
         "topic": "esp32/sensor/pressure",
         "qos": "2",
@@ -672,18 +724,18 @@
         "rh": 0,
         "inputs": 0,
         "x": 620,
-        "y": 260,
+        "y": 140,
         "wires": [
             [
-                "09fb20cd3f152d6e"
+                "ec1f10017cb99d94"
             ]
         ]
     },
     {
-        "id": "1cd67f210454028b",
+        "id": "c392ec045342451a",
         "type": "mqtt in",
-        "z": "b3dd6b5b104859ea",
-        "g": "f18fde582b6c6733",
+        "z": "9ebc91553e1f5618",
+        "g": "fa3ed28ec445ce6d",
         "name": "CO2",
         "topic": "esp32/sensor/co2",
         "qos": "2",
@@ -694,18 +746,18 @@
         "rh": 0,
         "inputs": 0,
         "x": 630,
-        "y": 300,
+        "y": 180,
         "wires": [
             [
-                "09fb20cd3f152d6e"
+                "ec1f10017cb99d94"
             ]
         ]
     },
     {
-        "id": "0531ccfaaf104bdb",
+        "id": "a2ebe0859c2b9cb1",
         "type": "mqtt in",
-        "z": "b3dd6b5b104859ea",
-        "g": "f18fde582b6c6733",
+        "z": "9ebc91553e1f5618",
+        "g": "fa3ed28ec445ce6d",
         "name": "Dust",
         "topic": "esp32/sensor/dust",
         "qos": "2",
@@ -716,18 +768,18 @@
         "rh": 0,
         "inputs": 0,
         "x": 630,
-        "y": 340,
+        "y": 220,
         "wires": [
             [
-                "09fb20cd3f152d6e"
+                "ec1f10017cb99d94"
             ]
         ]
     },
     {
-        "id": "81944bccd39a2782",
+        "id": "ee4eaec821a7f6fb",
         "type": "mqtt in",
-        "z": "b3dd6b5b104859ea",
-        "g": "f18fde582b6c6733",
+        "z": "9ebc91553e1f5618",
+        "g": "fa3ed28ec445ce6d",
         "name": "AQI",
         "topic": "esp32/sensor/aqi",
         "qos": "2",
@@ -738,18 +790,18 @@
         "rh": 0,
         "inputs": 0,
         "x": 630,
-        "y": 380,
+        "y": 260,
         "wires": [
             [
-                "09fb20cd3f152d6e"
+                "ec1f10017cb99d94"
             ]
         ]
     },
     {
-        "id": "6f9fc118e34f23e3",
+        "id": "f05004150efcdb78",
         "type": "mqtt in",
-        "z": "b3dd6b5b104859ea",
-        "g": "f18fde582b6c6733",
+        "z": "9ebc91553e1f5618",
+        "g": "fa3ed28ec445ce6d",
         "name": "Temperature",
         "topic": "esp32/sensor/temperature",
         "qos": "2",
@@ -760,12 +812,324 @@
         "rh": 0,
         "inputs": 0,
         "x": 610,
-        "y": 180,
+        "y": 60,
         "wires": [
             [
-                "09fb20cd3f152d6e"
+                "ec1f10017cb99d94"
             ]
         ]
+    },
+    {
+        "id": "2f206dbccdb8d40d",
+        "type": "websocket in",
+        "z": "9ebc91553e1f5618",
+        "g": "2130546fa05bd666",
+        "name": "WebSocket In",
+        "server": "f5494776a418eb99",
+        "client": "",
+        "x": 150,
+        "y": 680,
+        "wires": [
+            [
+                "868db8b61c035d5f"
+            ]
+        ]
+    },
+    {
+        "id": "868db8b61c035d5f",
+        "type": "function",
+        "z": "9ebc91553e1f5618",
+        "g": "2130546fa05bd666",
+        "name": "Format MQTT Command",
+        "func": "try {\n    const data = JSON.parse(msg.payload);\n    \n    if (!data.type || !data.state) return null;\n    \n    return {\n        topic: `esp32/${data.type}/set`,\n        payload: data.state,\n        retain: false\n    };\n} catch (e) {\n    node.error(e);\n    return null;\n}",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 370,
+        "y": 680,
+        "wires": [
+            [
+                "3b186c910827e7e0",
+                "62692082a78c95fe"
+            ]
+        ]
+    },
+    {
+        "id": "3b186c910827e7e0",
+        "type": "mqtt out",
+        "z": "9ebc91553e1f5618",
+        "g": "2130546fa05bd666",
+        "name": "To ESP32",
+        "topic": "",
+        "qos": "1",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "6df0540f12236ba5",
+        "x": 1060,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "62692082a78c95fe",
+        "type": "debug",
+        "z": "9ebc91553e1f5618",
+        "g": "2130546fa05bd666",
+        "name": "Debug",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 700,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "06eadb5101e0a5c8",
+        "type": "mqtt in",
+        "z": "9ebc91553e1f5618",
+        "g": "2130546fa05bd666",
+        "name": "ESP32 States",
+        "topic": "esp32/+/state",
+        "qos": "1",
+        "datatype": "auto",
+        "broker": "6df0540f12236ba5",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 150,
+        "y": 820,
+        "wires": [
+            [
+                "48bbbc082319ceb1"
+            ]
+        ]
+    },
+    {
+        "id": "48bbbc082319ceb1",
+        "type": "function",
+        "z": "9ebc91553e1f5618",
+        "g": "2130546fa05bd666",
+        "name": "Format State Update",
+        "func": "const device = msg.topic.split('/')[1];\n\nreturn {\n    payload: {\n        type: device,\n        state: msg.payload\n    }\n};",
+        "outputs": 1,
+        "x": 380,
+        "y": 820,
+        "wires": [
+            [
+                "32efceb760331107"
+            ]
+        ]
+    },
+    {
+        "id": "32efceb760331107",
+        "type": "websocket out",
+        "z": "9ebc91553e1f5618",
+        "g": "2130546fa05bd666",
+        "name": "WebSocket Out",
+        "server": "f5494776a418eb99",
+        "client": "",
+        "x": 1060,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "b9a2952276adcc7c",
+        "type": "mqtt in",
+        "z": "9ebc91553e1f5618",
+        "g": "dafd05e87c0cecc1",
+        "name": "Humidity",
+        "topic": "esp32/sensor/humidity",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "6df0540f12236ba5",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 600,
+        "y": 400,
+        "wires": [
+            [
+                "63962291738db7bf"
+            ]
+        ]
+    },
+    {
+        "id": "d965608e4854df89",
+        "type": "mqtt in",
+        "z": "9ebc91553e1f5618",
+        "g": "dafd05e87c0cecc1",
+        "name": "Pressure",
+        "topic": "esp32/sensor/pressure",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "6df0540f12236ba5",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 600,
+        "y": 460,
+        "wires": [
+            [
+                "63962291738db7bf"
+            ]
+        ]
+    },
+    {
+        "id": "54002b5f92d33780",
+        "type": "mqtt in",
+        "z": "9ebc91553e1f5618",
+        "g": "dafd05e87c0cecc1",
+        "name": "CO2",
+        "topic": "esp32/sensor/co2",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "6df0540f12236ba5",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 590,
+        "y": 520,
+        "wires": [
+            [
+                "63962291738db7bf"
+            ]
+        ]
+    },
+    {
+        "id": "9b67a20ecc966dd5",
+        "type": "mqtt in",
+        "z": "9ebc91553e1f5618",
+        "g": "dafd05e87c0cecc1",
+        "name": "Dust",
+        "topic": "esp32/sensor/dust",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "6df0540f12236ba5",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 590,
+        "y": 580,
+        "wires": [
+            [
+                "63962291738db7bf"
+            ]
+        ]
+    },
+    {
+        "id": "07ebd42315ced98f",
+        "type": "mqtt in",
+        "z": "9ebc91553e1f5618",
+        "g": "dafd05e87c0cecc1",
+        "name": "AQI",
+        "topic": "esp32/sensor/aqi",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "6df0540f12236ba5",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 730,
+        "y": 600,
+        "wires": [
+            [
+                "63962291738db7bf"
+            ]
+        ]
+    },
+    {
+        "id": "156fcaa80f399b18",
+        "type": "mqtt in",
+        "z": "9ebc91553e1f5618",
+        "g": "dafd05e87c0cecc1",
+        "name": "Temperature",
+        "topic": "esp32/sensor/temperature",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "6df0540f12236ba5",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 610,
+        "y": 340,
+        "wires": [
+            [
+                "63962291738db7bf"
+            ]
+        ]
+    },
+    {
+        "id": "32a06c4ee03cb0a3",
+        "type": "firebase-out",
+        "z": "9ebc91553e1f5618",
+        "g": "dafd05e87c0cecc1",
+        "name": "Save to Firebase",
+        "database": "4cc9225acd81a250",
+        "path": "env_data",
+        "pathType": "str",
+        "priority": "0",
+        "queryType": "update",
+        "x": 1050,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "63962291738db7bf",
+        "type": "function",
+        "z": "9ebc91553e1f5618",
+        "g": "dafd05e87c0cecc1",
+        "name": "Format Firebase Data",
+        "func": "try {\n    // Parse value to number\n    let value = parseFloat(msg.payload);\n    if (isNaN(value)) {\n        node.error('Invalid sensor value');\n        return null;\n    }\n\n    // Round to 2 decimal places\n    value = Math.round(value * 100) / 100;\n\n    // Get sensor name from topic\n    const sensorType = msg.topic.split('/').pop();\n\n    // Create update payload\n    msg.payload = {\n        [`sensors/${sensorType}`]: value\n    };\n\n    node.log(`Storing ${sensorType}: ${value}`);\n    return msg;\n    \n} catch (error) {\n    node.error('Error processing sensor data: ' + error.message);\n    return null;\n}",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 400,
+        "wires": [
+            [
+                "32a06c4ee03cb0a3",
+                "d9749fb07fc85ae5"
+            ]
+        ]
+    },
+    {
+        "id": "d9749fb07fc85ae5",
+        "type": "debug",
+        "z": "9ebc91553e1f5618",
+        "g": "dafd05e87c0cecc1",
+        "name": "Debug Firebase Data",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1010,
+        "y": 540,
+        "wires": []
     },
     {
         "id": "6df0540f12236ba5",
@@ -851,153 +1215,6 @@
         "className": ""
     },
     {
-        "id": "fb84a26e67e28da5",
-        "type": "group",
-        "z": "b3dd6b5b104859ea",
-        "name": "Web socket and MQTT Handler",
-        "style": {
-            "label": true
-        },
-        "nodes": [
-            "websocket_in",
-            "command_handler",
-            "mqtt_out",
-            "debug",
-            "mqtt_state_in",
-            "state_handler",
-            "websocket_out"
-        ],
-        "x": 74,
-        "y": 699,
-        "w": 662,
-        "h": 202
-    },
-    {
-        "id": "websocket_in",
-        "type": "websocket in",
-        "z": "b3dd6b5b104859ea",
-        "g": "fb84a26e67e28da5",
-        "name": "WebSocket In",
-        "server": "f5494776a418eb99",
-        "client": "",
-        "x": 170,
-        "y": 740,
-        "wires": [
-            [
-                "command_handler"
-            ]
-        ]
-    },
-    {
-        "id": "command_handler",
-        "type": "function",
-        "z": "b3dd6b5b104859ea",
-        "g": "fb84a26e67e28da5", 
-        "name": "Format MQTT Command",
-        "func": "try {\n    const data = JSON.parse(msg.payload);\n    \n    if (!data.type || !data.state) return null;\n    \n    return {\n        topic: `esp32/${data.type}/set`,\n        payload: data.state,\n        retain: false\n    };\n} catch (e) {\n    node.error(e);\n    return null;\n}",
-        "outputs": 1,
-        "timeout": "",
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 400,
-        "y": 740,
-        "wires": [
-            [
-                "mqtt_out",
-                "debug"
-            ]
-        ]
-    },
-    {
-        "id": "mqtt_out",
-        "type": "mqtt out",
-        "z": "b3dd6b5b104859ea",
-        "g": "fb84a26e67e28da5",
-        "name": "To ESP32",
-        "topic": "",
-        "qos": "1",
-        "retain": "",
-        "respTopic": "",
-        "contentType": "",
-        "userProps": "",
-        "correl": "",
-        "expiry": "",
-        "broker": "6df0540f12236ba5",
-        "x": 630,
-        "y": 740,
-        "wires": []
-    },
-    {
-        "id": "debug",
-        "type": "debug",
-        "z": "b3dd6b5b104859ea",
-        "g": "fb84a26e67e28da5",
-        "name": "Debug",
-        "active": true,
-        "tosidebar": true,
-        "console": true,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 630,
-        "y": 800,
-        "wires": []
-    },
-    {
-        "id": "mqtt_state_in",
-        "type": "mqtt in",
-        "z": "b3dd6b5b104859ea",
-        "g": "fb84a26e67e28da5",
-        "name": "ESP32 States",
-        "topic": "esp32/+/state",
-        "qos": "1",
-        "datatype": "auto",
-        "broker": "6df0540f12236ba5",
-        "nl": false,
-        "rap": true,
-        "rh": 0,
-        "inputs": 0,
-        "x": 170,
-        "y": 800,
-        "wires": [
-            [
-                "state_handler"
-            ]
-        ]
-    },
-    {
-        "id": "state_handler",
-        "type": "function",
-        "z": "b3dd6b5b104859ea",
-        "g": "fb84a26e67e28da5",
-        "name": "Format State Update",
-        "func": "const device = msg.topic.split('/')[1];\n\nreturn {\n    payload: {\n        type: device,\n        state: msg.payload\n    }\n};",
-        "outputs": 1,
-        "x": 400,
-        "y": 800,
-        "wires": [
-            [
-                "websocket_out"
-            ]
-        ]
-    },
-    {
-        "id": "websocket_out",
-        "type": "websocket out",
-        "z": "b3dd6b5b104859ea",
-        "g": "fb84a26e67e28da5",
-        "name": "WebSocket Out",
-        "server": "f5494776a418eb99",
-        "client": "",
-        "x": 630,
-        "y": 860,
-        "wires": []
-    },
-    {
         "id": "c08db5e37956216c",
         "type": "MySQLdatabase",
         "name": "Environment DB",
@@ -1012,6 +1229,19 @@
         "type": "websocket-listener",
         "path": "/ws/node/state",
         "wholemsg": "false"
+    },
+    {
+        "id": "4cc9225acd81a250",
+        "type": "firebase-config",
+        "name": "My Database",
+        "authType": "privateKey",
+        "claims": {},
+        "createUser": false,
+        "status": {
+            "firestore": true,
+            "storage": false
+        },
+        "useClaims": false
     },
     {
         "id": "environment_tab",
