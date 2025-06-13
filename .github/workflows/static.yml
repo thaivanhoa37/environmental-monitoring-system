@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Environmental Monitoring System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4e73df;
+            --success: #1cc88a;
+            --warning: #f6c23e;
+            --danger: #e74a3b;
+            --info: #36b9cc;
+            --dark: #5a5c69;
+        }
+
+        body {
+            background-color: #f8f9fc;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .topbar {
+            background: linear-gradient(to right, var(--primary), #224abe);
+            padding: 1rem;
+            color: white;
+            margin-bottom: 2rem;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .sensor-card {
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+            transition: transform 0.2s;
+        }
+
+        .sensor-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .sensor-card.temperature { background: linear-gradient(45deg, #4e73df, #224abe); }
+        .sensor-card.humidity { background: linear-gradient(45deg, #36b9cc, #1a8eaa); }
+        .sensor-card.pressure { background: linear-gradient(45deg, #1cc88a, #13855c); }
+        .sensor-card.co2 { background: linear-gradient(45deg, #f6c23e, #dda20a); }
+        .sensor-card.dust { background: linear-gradient(45deg, #e74a3b, #be2617); }
+        .sensor-card.aqi { background: linear-gradient(45deg, #858796, #60616f); }
+
+        .sensor-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+
+        .sensor-icon {
+            font-size: 2rem;
+            opacity: 0.8;
+        }
+
+        .assessment-text {
+            font-size: 0.85rem;
+            padding: 8px 15px;
+            border-radius: 6px;
+            background: white;
+            display: block;
+            margin-top: -10px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            border-bottom: 3px solid transparent;
+        }
+
+        .assessment-text.good {
+            color: var(--success);
+            border-bottom-color: var(--success);
+        }
+
+        .assessment-text.warning {
+            color: var(--warning);
+            border-bottom-color: var(--warning);
+        }
+
+        .assessment-text.danger {
+            color: var(--danger);
+            border-bottom-color: var(--danger);
+        }
+
+        .alerts-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .alert-item {
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .alert-item.warning {
+            background-color: rgba(246, 194, 62, 0.1);
+            border-left: 4px solid var(--warning);
+        }
+
+        .alert-item.danger {
+            background-color: rgba(231, 74, 59, 0.1);
+            border-left: 4px solid var(--danger);
+        }
+
+        .alert-item.good {
+            background-color: rgba(28, 200, 138, 0.1);
+            border-left: 4px solid var(--success);
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: bold;
+            color: var(--dark);
+            margin-bottom: 0.25rem;
+            font-size: 1.1rem;
+        }
+
+        .alert-value {
+            font-size: 1rem;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .who-assessment {
+            color: var(--dark);
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(0,0,0,0.05);
+            border-radius: 0.25rem;
+        }
+
+        .who-limits {
+            font-size: 0.85rem;
+            color: var(--dark);
+            opacity: 0.8;
+            margin-top: 0.5rem;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            padding-top: 0.5rem;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 1rem;
+            border-radius: 15px;
+            height: 400px;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-select {
+            font-size: 0.875rem;
+            padding: 0.25rem 2rem 0.25rem 0.5rem;
+        }
+
+        footer {
+            background: rgb(78, 115, 223);
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <div class="container">
+            <h1 class="h3 mb-0">Environmental Monitoring System</h1>
+            <div class="status-bar">
+                <div class="last-update">
+                    Last update: <span id="lastUpdate">--:--:--</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Sensor Cards -->
+        <div class="row">
+            <!-- Temperature Card -->
+            <div class="col-md-4">
+                <div class="sensor-card temperature">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4>Temperature</h4>
+                            <div class="sensor-value">
+                                <span id="currentTemp">0.0</span>°C
+                            </div>
+                        </div>
+                        <i class="fas fa-temperature-high sensor-icon"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Humidity Card -->
+            <div class="col-md-4">
+                <div class="sensor-card humidity">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4>Humidity</h4>
+                            <div class="sensor-value">
+                                <span id="currentHumidity">0.0</span>%
+                            </div>
+                        </div>
+                        <i class="fas fa-tint sensor-icon"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pressure Card -->
+            <div class="col-md-4">
+                <div class="sensor-card pressure">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4>Pressure</h4>
+                            <div class="sensor-value">
+                                <span id="currentPressure">0.0</span>hPa
+                            </div>
+                        </div>
+                        <i class="fas fa-tachometer-alt sensor-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- CO2 Card -->
+            <div class="col-md-4">
+                <div class="sensor-card co2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4>CO2</h4>
+                            <div class="sensor-value">
+                                <span id="currentCO2">0.0</span>ppm
+                            </div>
+                        </div>
+                        <i class="fas fa-cloud sensor-icon"></i>
+                    </div>
+                </div>
+                <div id="co2Assessment" class="assessment-text"></div>
+            </div>
+            
+            <!-- Dust Card -->
+            <div class="col-md-4">
+                <div class="sensor-card dust">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4>Dust (PM2.5)</h4>
+                            <div class="sensor-value">
+                                <span id="currentDust">0.0</span>µg/m³
+                            </div>
+                        </div>
+                        <i class="fas fa-smog sensor-icon"></i>
+                    </div>
+                </div>
+                <div id="dustAssessment" class="assessment-text"></div>
+            </div>
+            
+            <!-- AQI Card -->
+            <div class="col-md-4">
+                <div class="sensor-card aqi">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4>AQI</h4>
+                            <div class="sensor-value">
+                                <span id="currentAQI">0.0</span>
+                            </div>
+                        </div>
+                        <i class="fas fa-wind sensor-icon"></i>
+                    </div>
+                </div>
+                <div id="aqiAssessment" class="assessment-text"></div>
+            </div>
+        </div>
+
+        <!-- Air Quality Assessment Section -->
+        <div class="alerts-section">
+            <h4 class="mb-4">Đánh giá chất lượng không khí theo WHO</h4>
+            <div id="alertsContainer">
+                <!-- Alerts will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="row">
+            <!-- Temperature Chart -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="font-weight-bold text-primary mb-0">Temperature History</h6>
+                        <select class="form-select form-select-sm w-auto" onchange="changeTimeRange(this.value)">
+                            <option value="1">1 hour</option>
+                            <option value="6">6 hours</option>
+                            <option value="12">12 hours</option>
+                            <option value="24" selected>24 hours</option>
+                            <option value="48">48 hours</option>
+                        </select>
+                    </div>
+                    <div class="card-body chart-container">
+                        <canvas id="tempChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Humidity Chart -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="font-weight-bold text-primary mb-0">Humidity History</h6>
+                        <select class="form-select form-select-sm w-auto" onchange="changeTimeRange(this.value)">
+                            <option value="1">1 hour</option>
+                            <option value="6">6 hours</option>
+                            <option value="12">12 hours</option>
+                            <option value="24" selected>24 hours</option>
+                            <option value="48">48 hours</option>
+                        </select>
+                    </div>
+                    <div class="card-body chart-container">
+                        <canvas id="humidityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- CO2 & AQI Chart -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="font-weight-bold text-primary mb-0">CO2 & AQI History</h6>
+                        <select class="form-select form-select-sm w-auto" onchange="changeTimeRange(this.value)">
+                            <option value="1">1 hour</option>
+                            <option value="6">6 hours</option>
+                            <option value="12">12 hours</option>
+                            <option value="24" selected>24 hours</option>
+                            <option value="48">48 hours</option>
+                        </select>
+                    </div>
+                    <div class="card-body chart-container">
+                        <canvas id="co2Chart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Dust Level Chart -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="font-weight-bold text-primary mb-0">Dust Level History</h6>
+                        <select class="form-select form-select-sm w-auto" onchange="changeTimeRange(this.value)">
+                            <option value="1">1 hour</option>
+                            <option value="6">6 hours</option>
+                            <option value="12">12 hours</option>
+                            <option value="24" selected>24 hours</option>
+                            <option value="48">48 hours</option>
+                        </select>
+                    </div>
+                    <div class="card-body chart-container">
+                        <canvas id="dustChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <!-- Chart.js and Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0/dist/chartjs-adapter-moment.min.js"></script>
+
+    <!-- Application Script -->
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "environmental-monitoring-be427.firebaseapp.com",
+            databaseURL: "https://environmental-monitoring-be427-default-rtdb.firebaseio.com",
+            projectId: "environmental-monitoring-be427",
+            storageBucket: "environmental-monitoring-be427.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // WHO guidelines and thresholds
+        const WHO_GUIDELINES = {
+            co2: {
+                safe: 1000,
+                moderate: 2000,
+                danger: 5000,
+                unit: 'ppm',
+                recommendations: {
+                    good: 'Chất lượng không khí tốt',
+                    warning: 'Cần tăng cường thông gió',
+                    danger: 'Cần thông gió ngay lập tức'
+                }
+            },
+            dust: {
+                safe: 100,
+                moderate: 150,
+                danger: 200,
+                unit: 'µg/m³',
+                recommendations: {
+                    good: 'Chất lượng không khí tốt',
+                    warning: 'Có thể gây kích ứng đường hô hấp',
+                    danger: 'Nguy hại cho sức khỏe hô hấp'
+                }
+            },
+            aqi: {
+                safe: 100,
+                moderate: 150,
+                danger: 200,
+                unit: '',
+                recommendations: {
+                    good: 'Chất lượng không khí tốt',
+                    warning: 'Hạn chế hoạt động ngoài trời kéo dài',
+                    danger: 'Không nên hoạt động ngoài trời, đóng cửa sổ'
+                }
+            }
+        };
+
+        let tempChart, humidityChart, co2Chart, dustChart;
+        let timeRange = 24; // Default time range in hours
+
+        // Function to fetch historical data
+        async function fetchHistoricalData(hours) {
+            const endTime = new Date();
+            const startTime = new Date(endTime - hours * 60 * 60 * 1000);
+
+            const historicalRef = database.ref('env_data/history');
+            const query = historicalRef
+                .orderByChild('timestamp')
+                .startAt(startTime.toISOString())
+                .endAt(endTime.toISOString());
+
+            return new Promise((resolve, reject) => {
+                query.once('value', (snapshot) => {
+                    const data = {
+                        timestamps: [],
+                        temperatures: [],
+                        humidities: [],
+                        pressures: [],
+                        co2_levels: [],
+                        dust_levels: [],
+                        aqi_levels: []
+                    };
+
+                    snapshot.forEach((childSnapshot) => {
+                        const reading = childSnapshot.val();
+                        const timestamp = new Date(reading.timestamp);
+
+                        data.timestamps.push(timestamp);
+                        data.temperatures.push(reading.temperature);
+                        data.humidities.push(reading.humidity);
+                        data.pressures.push(reading.pressure);
+                        data.co2_levels.push(reading.co2);
+                        data.dust_levels.push(reading.dust);
+                        data.aqi_levels.push(reading.aqi);
+                    });
+
+                    resolve(data);
+                }, reject);
+            });
+        }
+
+        // Function to change time range
+        async function changeTimeRange(hours) {
+            timeRange = parseInt(hours);
+            const data = await fetchHistoricalData(timeRange);
+            updateCharts(data);
+            
+            // Update all dropdowns to show the same time range
+            document.querySelectorAll('.form-select').forEach(select => {
+                select.value = hours;
+            });
+        }
+
+        function getAssessment(value, parameter) {
+            const guidelines = WHO_GUIDELINES[parameter];
+            if (value <= guidelines.safe) return 'good';
+            if (value <= guidelines.moderate) return 'warning';
+            return 'danger';
+        }
+
+        function updateAlertsSection(data) {
+            const container = document.getElementById('alertsContainer');
+            container.innerHTML = '';
+
+            const parameters = {
+                co2: { label: 'Nồng độ CO₂', value: data.co2 },
+                dust: { label: 'Bụi mịn PM2.5', value: data.dust },
+                aqi: { label: 'Chỉ số AQI', value: data.aqi }
+            };
+
+            for (const [param, info] of Object.entries(parameters)) {
+                const guidelines = WHO_GUIDELINES[param];
+                const assessment = getAssessment(info.value, param);
+                const unit = guidelines.unit ? ` ${guidelines.unit}` : '';
+
+                const alertElement = document.createElement('div');
+                alertElement.className = `alert-item ${assessment}`;
+                alertElement.innerHTML = `
+                    <div class="alert-content">
+                        <div class="alert-title">${info.label}</div>
+                        <div class="alert-value">Giá trị hiện tại: ${info.value}${unit}</div>
+                        <div class="who-assessment">
+                            <i class="fas fa-info-circle"></i> 
+                            ${guidelines.recommendations[assessment]}
+                        </div>
+                        <div class="who-limits">
+                            Tiêu chuẩn WHO: 
+                            An toàn < ${guidelines.safe}${unit} | 
+                            Trung bình < ${guidelines.moderate}${unit} | 
+                            Nguy hiểm ≥ ${guidelines.danger}${unit}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(alertElement);
+            }
+        }
+
+        function createChartOptions(label) {
+            return {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'hour',
+                            displayFormats: {
+                                hour: 'HH:mm',
+                                day: 'MM/DD'
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Time'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: label
+                        }
+                    }
+                }
+            };
+        }
+
+        function createChart(canvasId, label, color, options) {
+            return new Chart(document.getElementById(canvasId).getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: label,
+                        data: [],
+                        borderColor: color,
+                        backgroundColor: 'transparent',
+                        tension: 0.4
+                    }]
+                },
+                options: options
+            });
+        }
+
+        function initCharts() {
+            tempChart = createChart('tempChart', 'Temperature (°C)', '#4e73df', createChartOptions('Temperature (°C)'));
+            humidityChart = createChart('humidityChart', 'Humidity (%)', '#36b9cc', createChartOptions('Humidity (%)'));
+            
+            co2Chart = new Chart(document.getElementById('co2Chart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'CO2 (ppm)',
+                            data: [],
+                            borderColor: '#f6c23e',
+                            backgroundColor: 'transparent',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'AQI',
+                            data: [],
+                            borderColor: '#858796',
+                            backgroundColor: 'transparent',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: createChartOptions('Level')
+            });
+
+            dustChart = createChart('dustChart', 'Dust (µg/m³)', '#e74a3b', createChartOptions('Dust (µg/m³)'));
+        }
+
+        function updateCharts(data) {
+            // Sort data by timestamp
+            const indices = data.timestamps.map((_, i) => i);
+            indices.sort((a, b) => data.timestamps[a] - data.timestamps[b]);
+
+            const sortedData = {
+                timestamps: indices.map(i => data.timestamps[i]),
+                temperatures: indices.map(i => data.temperatures[i]),
+                humidities: indices.map(i => data.humidities[i]),
+                co2_levels: indices.map(i => data.co2_levels[i]),
+                dust_levels: indices.map(i => data.dust_levels[i]),
+                aqi_levels: indices.map(i => data.aqi_levels[i])
+            };
+
+            // Update temperature chart
+            tempChart.data.labels = sortedData.timestamps;
+            tempChart.data.datasets[0].data = sortedData.temperatures;
+            tempChart.update();
+
+            // Update humidity chart
+            humidityChart.data.labels = sortedData.timestamps;
+            humidityChart.data.datasets[0].data = sortedData.humidities;
+            humidityChart.update();
+
+            // Update CO2 & AQI chart
+            co2Chart.data.labels = sortedData.timestamps;
+            co2Chart.data.datasets[0].data = sortedData.co2_levels;
+            co2Chart.data.datasets[1].data = sortedData.aqi_levels;
+            co2Chart.update();
+
+            // Update dust chart
+            dustChart.data.labels = sortedData.timestamps;
+            dustChart.data.datasets[0].data = sortedData.dust_levels;
+            dustChart.update();
+        }
+
+        function updateSensorValues(data) {
+            // Update current values
+            document.getElementById('currentTemp').textContent = data.temperature.toFixed(1);
+            document.getElementById('currentHumidity').textContent = data.humidity.toFixed(1);
+            document.getElementById('currentPressure').textContent = data.pressure.toFixed(1);
+            document.getElementById('currentCO2').textContent = data.co2.toFixed(1);
+            document.getElementById('currentDust').textContent = data.dust.toFixed(1);
+            document.getElementById('currentAQI').textContent = data.aqi.toFixed(1);
+
+            // Update assessment text
+            function updateAssessmentElement(elementId, value, parameter) {
+                const assessment = getAssessment(value, parameter);
+                const element = document.getElementById(elementId);
+                const levelText = {
+                    'good': 'An toàn',
+                    'warning': 'Trung bình',
+                    'danger': 'Nguy hiểm'
+                };
+                
+                element.className = `assessment-text ${assessment}`;
+                element.innerHTML = `
+                    <strong>${levelText[assessment]}</strong><br>
+                    ${WHO_GUIDELINES[parameter].recommendations[assessment]}
+                `;
+            }
+
+            updateAssessmentElement('co2Assessment', data.co2, 'co2');
+            updateAssessmentElement('dustAssessment', data.dust, 'dust');
+            updateAssessmentElement('aqiAssessment', data.aqi, 'aqi');
+
+            // Update WHO assessment section
+            updateAlertsSection({
+                co2: data.co2,
+                dust: data.dust,
+                aqi: data.aqi
+            });
+            
+            document.getElementById('lastUpdate').textContent = moment().format('HH:mm:ss');
+        }
+
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', async function() {
+            initCharts();
+
+            // Initial historical data load
+            const historicalData = await fetchHistoricalData(timeRange);
+            updateCharts(historicalData);
+
+            // Listen to Firebase real-time updates for current values
+            const sensorsRef = database.ref('env_data/sensors');
+            sensorsRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    updateSensorValues(data);
+                    
+                    // Store historical data
+                    const historyRef = database.ref('env_data/history').push();
+                    historyRef.set({
+                        ...data,
+                        timestamp: new Date().toISOString()
+                    });
+                }
+            });
+
+            // Set up automatic refresh of historical data
+            setInterval(async () => {
+                const data = await fetchHistoricalData(timeRange);
+                updateCharts(data);
+            }, 60000); // Refresh every minute
+        });
+    </script>
+
+    <footer>
+        ©Bản quyền thuộc về THÁI VĂN HÒA
+    </footer>
+</body>
+</html>
