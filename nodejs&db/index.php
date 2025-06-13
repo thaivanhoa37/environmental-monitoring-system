@@ -770,5 +770,9 @@ $conn->close();
             setInterval(fetchData, 5000); // Update every 5 seconds
         });
     </script>
+
+    <footer style="background:rgb(78, 115, 223); color: white; text-align: center; padding: 1rem; margin-top: 2rem;">
+        ©Bản quyền thuộc về THÁI VĂN HÒA
+    </footer>
 </body>
 </html>
