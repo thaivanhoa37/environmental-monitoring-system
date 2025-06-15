@@ -1,0 +1,179 @@
+:root {
+    --primary: #4e73df;
+    --success: #1cc88a;
+    --warning: #f6c23e;
+    --danger: #e74a3b;
+    --info: #36b9cc;
+    --dark: #5a5c69;
+}
+
+body {
+    background-color: #f8f9fc;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.topbar {
+    background: linear-gradient(to right, var(--primary), #224abe);
+    padding: 1rem;
+    color: white;
+    margin-bottom: 2rem;
+    border-radius: 0 0 15px 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.sensor-card {
+    color: white;
+    padding: 1.5rem;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 1.5rem;
+    transition: transform 0.2s;
+}
+
+.sensor-card:hover {
+    transform: translateY(-5px);
+}
+
+.sensor-card.temperature { background: linear-gradient(45deg, #4e73df, #224abe); }
+.sensor-card.humidity { background: linear-gradient(45deg, #36b9cc, #1a8eaa); }
+.sensor-card.pressure { background: linear-gradient(45deg, #1cc88a, #13855c); }
+.sensor-card.co2 { background: linear-gradient(45deg, #f6c23e, #dda20a); }
+.sensor-card.dust { background: linear-gradient(45deg, #e74a3b, #be2617); }
+.sensor-card.aqi { background: linear-gradient(45deg, #858796, #60616f); }
+
+.sensor-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 1rem 0;
+}
+
+.sensor-icon {
+    font-size: 2rem;
+    opacity: 0.8;
+}
+
+.assessment-text {
+    font-size: 0.85rem;
+    padding: 8px 15px;
+    border-radius: 6px;
+    background: white;
+    display: block;
+    margin-top: -10px;
+    margin-bottom: 20px;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: center;
+    border-bottom: 3px solid transparent;
+}
+
+.assessment-text.good {
+    color: var(--success);
+    border-bottom-color: var(--success);
+}
+
+.assessment-text.warning {
+    color: var(--warning);
+    border-bottom-color: var(--warning);
+}
+
+.assessment-text.danger {
+    color: var(--danger);
+    border-bottom-color: var(--danger);
+}
+
+.alerts-section {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.alert-item {
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.alert-item.warning {
+    background-color: rgba(246, 194, 62, 0.1);
+    border-left: 4px solid var(--warning);
+}
+
+.alert-item.danger {
+    background-color: rgba(231, 74, 59, 0.1);
+    border-left: 4px solid var(--danger);
+}
+
+.alert-item.good {
+    background-color: rgba(28, 200, 138, 0.1);
+    border-left: 4px solid var(--success);
+}
+
+.alert-content {
+    flex: 1;
+}
+
+.alert-title {
+    font-weight: bold;
+    color: var(--dark);
+    margin-bottom: 0.25rem;
+    font-size: 1.1rem;
+}
+
+.alert-value {
+    font-size: 1rem;
+    color: var(--dark);
+    margin-bottom: 0.5rem;
+}
+
+.who-assessment {
+    color: var(--dark);
+    font-size: 0.95rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: rgba(0,0,0,0.05);
+    border-radius: 0.25rem;
+}
+
+.who-limits {
+    font-size: 0.85rem;
+    color: var(--dark);
+    opacity: 0.8;
+    margin-top: 0.5rem;
+    border-top: 1px solid rgba(0,0,0,0.1);
+    padding-top: 0.5rem;
+}
+
+.chart-container {
+    background: white;
+    padding: 1rem;
+    border-radius: 15px;
+    height: 400px;
+    margin-bottom: 1.5rem;
+}
+
+.form-select {
+    font-size: 0.875rem;
+    padding: 0.25rem 2rem 0.25rem 0.5rem;
+}
+
+footer {
+    background: rgb(78, 115, 223);
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    margin-top: 2rem;
+}
