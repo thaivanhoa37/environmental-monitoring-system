@@ -1,0 +1,28 @@
+{
+  "project_info": {
+    "project_number": "104576759211",
+    "project_id": "environmental-monitoring-d50f8",
+    "storage_bucket": "environmental-monitoring-d50f8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:104576759211:android:d8e9b5f5e0f3a7d5e2b890",
+        "android_client_info": {
+          "package_name": "com.example.env_monitor"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3KKJNVxTdwAFsfn6YcqDX0Y2rn2FA1l8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ]
+}
