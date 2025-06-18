@@ -44,7 +44,7 @@ The project is implemented by student **Thái Văn Hòa** to raise environmental
 - BMP280: 50,000 VND
 - AHT20: 50,000 VND
 - GP2Y1014AU0F: 100,000 VND
-- Raspberry Pi 4 (4GB): 1,500,000 VND
+- Raspberry Pi 4 (4GB): 2,500,000 VND
 - Accessories: 50,000 VND
 - **Total**: ~1,880,000 VND (~$75 USD)
 

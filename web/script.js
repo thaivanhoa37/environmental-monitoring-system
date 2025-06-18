@@ -308,8 +308,53 @@ function updateSensorValues(data) {
     document.getElementById('lastUpdate').textContent = moment().format('HH:mm:ss');
 }
 
+// Weather forecast implementation
+async function predictTemperature(currentTemp, currentHumidity, currentPressure) {
+    try {
+        const response = await fetch('http://localhost:5000/predict', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                temperature: currentTemp,
+                humidity: currentHumidity,
+                pressure: currentPressure
+            })
+        });
+
+        const data = await response.json();
+        if (data.status === 'success') {
+            return data.prediction;
+        } else {
+            console.error('Prediction error:', data.error);
+            return null;
+        }
+    } catch (error) {
+        console.error('Error making prediction request:', error);
+        return null;
+    }
+}
+
+// Function to update weather forecast display
+function updateWeatherForecast(data) {
+    // Update current conditions in forecast section
+    document.getElementById('currentTempForecast').textContent = data.temperature.toFixed(1);
+    document.getElementById('currentHumidityForecast').textContent = data.humidity.toFixed(1);
+    document.getElementById('currentPressureForecast').textContent = data.pressure.toFixed(1);
+
+    // Make and display prediction
+    predictTemperature(data.temperature, data.humidity, data.pressure)
+        .then(prediction => {
+            if (prediction !== null) {
+                document.getElementById('predictedTemp').textContent = prediction.toFixed(1);
+            }
+        });
+}
+
 // Initialize application
 document.addEventListener('DOMContentLoaded', async function() {
+    // Initialize charts
     initCharts();
 
     // Initial historical data load
@@ -322,6 +367,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         const data = snapshot.val();
         if (data) {
             updateSensorValues(data);
+            updateWeatherForecast(data);
             
             // Store historical data
             const historyRef = database.ref('env_data/history').push();

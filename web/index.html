@@ -127,6 +127,55 @@
             </div>
         </div>
 
+        <!-- Weather Forecast Section -->
+        <div class="alerts-section weather-forecast">
+            <h4 class="mb-4"><i class="fas fa-chart-line me-2"></i>Dự báo nhiệt độ</h4>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card forecast-card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="current-conditions">
+                                        <h5>Điều kiện hiện tại</h5>
+                                        <div class="conditions-grid">
+                                            <div class="condition-item">
+                                                <i class="fas fa-temperature-high"></i>
+                                                <span>Nhiệt độ</span>
+                                                <strong><span id="currentTempForecast">--</span>°C</strong>
+                                            </div>
+                                            <div class="condition-item">
+                                                <i class="fas fa-tint"></i>
+                                                <span>Độ ẩm</span>
+                                                <strong><span id="currentHumidityForecast">--</span>%</strong>
+                                            </div>
+                                            <div class="condition-item">
+                                                <i class="fas fa-tachometer-alt"></i>
+                                                <span>Áp suất</span>
+                                                <strong><span id="currentPressureForecast">--</span>hPa</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="prediction-box">
+                                        <h5>Dự báo 24h tới</h5>
+                                        <div class="prediction-temp">
+                                            <span id="predictedTemp">--</span>°C
+                                        </div>
+                                        <div class="prediction-note">
+                                            <i class="fas fa-info-circle"></i>
+                                            Dự đoán từ mô hình ML
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Charts Section -->
         <div class="row">
             <!-- Temperature Chart -->
@@ -212,6 +261,9 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <!-- TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
 
     <!-- Chart.js and Dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
