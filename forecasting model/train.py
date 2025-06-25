@@ -13,13 +13,13 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 # --- MySQL Connection Configuration ---
 DB_CONFIG = {
     'user': 'root',  # Default MySQL user
-    'password': '',  # Default empty password
+    'password': '1',  # Default empty password
     'host': 'localhost',
     'database': 'environmental_monitoring_system',
 }
 
 # --- Columns to forecast ---
-COLUMNS_TO_FORECAST = ['temperature', 'humidity', 'pressure', 'co2', 'dust', 'aqi']
+COLUMNS_TO_FORECAST = ['2y5]
 
 def fetch_data_from_mysql(limit=None):
     """Connect to MySQL and fetch historical data."""
